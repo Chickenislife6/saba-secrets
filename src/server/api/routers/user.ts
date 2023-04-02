@@ -2,10 +2,10 @@ import { TRPCError } from '@trpc/server'
 import { hash } from 'argon2'
 
 import { createTRPCRouter, publicProcedure } from '~/server/api/trpc'
-import { loginSchema } from '~/validation/auth'
+import { registerSchema } from '~/validation/auth'
 
-export const registrationRouter = createTRPCRouter({
-  signup: publicProcedure.input(loginSchema).mutation(async ({ input, ctx }) => {
+export const userRouter = createTRPCRouter({
+  register: publicProcedure.input(registerSchema).mutation(async ({ input, ctx }) => {
     const { username, password } = input
 
     const userExists = await ctx.prisma.user.findFirst({

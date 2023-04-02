@@ -24,7 +24,7 @@ const MyApp: AppType<{ session: Session | null }> = ({
           content="saba secrets, end-to-end encryption, zero knowledge, end-to-end encrypted messaging, secure messaging"
         />
         <link rel="icon" href="/favicon.ico" />
-        <link rel="stylesheet" href="https://rsms.me/inter/inter.css" />
+        {/* <link rel="stylesheet" href="https://rsms.me/inter/inter.css" /> */}
       </Head>
       <Component {...pageProps} />
     </SessionProvider>

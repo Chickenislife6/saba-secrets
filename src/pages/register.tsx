@@ -1,18 +1,35 @@
 import Link from 'next/link'
+import { useForm, type SubmitHandler } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
 
 import { Button } from '~/components/common/Button'
 import { TextField } from '~/components/common/Fields'
 import { AuthLayout } from '~/layouts/AuthLayout'
+import { registerSchema, type IRegister } from '~/validation/auth'
+// import { api } from '~/utils/api'
 
 export default function Register() {
-  // TODO: Add validation
-  // TODO: Add error handling with react-hook-form
   // TODO: Add trpc.registration router
   // TODO: Add nextauth login
 
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm<IRegister>({
+    resolver: zodResolver(registerSchema),
+  })
+
+  //   const { mutateAsync } = api.user.register.useMutation()
+
+  // TODO: add mutate and reset/redirect to main
+  const onSubmit: SubmitHandler<IRegister> = async data => {
+    console.log(data)
+  }
+
   return (
     <AuthLayout
-      title="Sign in to your account"
+      title="Create an account"
       subtitle={
         <>
           Already registered?{' '}
@@ -23,34 +40,37 @@ export default function Register() {
         </>
       }
     >
-      <form>
+      <form onSubmit={handleSubmit(onSubmit)}>
         <div className="space-y-6">
           <TextField
             label="Username"
             id="username"
-            name="username"
             type="username"
             autoComplete="username"
             required
+            inputRegister={register('username')}
+            errorMessage={errors.username?.message}
           />
           <TextField
             label="Password"
             id="password"
-            name="password"
             type="password"
-            autoComplete="new-password"
+            autoComplete="newPassword"
             required
+            inputRegister={register('password')}
+            errorMessage={errors.password?.message}
           />
           <TextField
             label="Confirm password"
-            id="confirm-password"
-            name="confirm-password"
+            id="confirmPassword"
             type="password"
             required
+            inputRegister={register('confirmPassword')}
+            errorMessage={errors.confirmPassword?.message}
           />
         </div>
-        <Button type="submit" color="purple" className="mt-8 w-full">
-          Sign up
+        <Button type="submit" color="purple" className="mt-8 w-full" disabled={isSubmitting}>
+          Create account
         </Button>
       </form>
     </AuthLayout>
