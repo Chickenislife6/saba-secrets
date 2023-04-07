@@ -14,42 +14,22 @@ datasource db {
     url      = env("DATABASE_URL")
 }
 
-// Messaging Schema
-model Message {
-    id             Int         @id @default(autoincrement())
-    senderId       String
-    recipientId    String
-    sentAt         DateTime    @default(now())
-    seenAt         DateTime?
-    content        String
-    type           ContentType
-    conversationId String
-
-    sender    User @relation(name: "Sender", fields: [senderId], references: [id])
-    recipient User @relation(name: "Recipient", fields: [recipientId], references: [id])
-
-    @@map("messages")
-}
-
-enum ContentType {
-    TEXT
-    IMAGE
-    VIDEO
-    AUDIO
-    FILE
-}
-
 model User {
-    id       String     @id @default(cuid())
-    username String     @unique
-    password String
-    image    String?
-    status   UserStatus @default(OFFLINE)
+    id                String  @id @default(uuid()) @db.Uuid // use pg's dedicated uuid type
+    username          String  @unique
+    password          String
+    avatar            String?
+    identityPublicKey String
 
-    sentMessages     Message[] @relation("Sender")
-    recievedMessages Message[] @relation("Recipient")
+    sentMessages     Message[] @relation("sender")
+    recievedMessages Message[] @relation("recipient")
+
+    // Prisma sets this as optional, but it is a required 1-1 relation
+    SignedPreKey   SignedPreKey?
+    OneTimePreKeys OneTimePreKey[]
 
     // Note name and email will NOT be used, but they are fields generally required by next-auth
+    // Will be required for any sort of server-side session management
     // name          String?
     // email         String?   @unique
     // emailVerified DateTime?
@@ -62,12 +42,58 @@ model User {
     @@map("users")
 }
 
-enum UserStatus {
-    ONLINE
-    OFFLINE
+model SignedPreKey {
+    id        Int
+    publicKey String
+    signature String
+    userId    String @unique // unique enforces 1-1 constraint
+
+    user User @relation(fields: [userId], references: [id])
+
+    @@index([userId])
+    @@map("signed_pre_keys")
+}
+
+model OneTimePreKey {
+    id        Int
+    publicKey String
+    userId    String
+
+    user User @relation(fields: [userId], references: [id])
+
+    @@unique([id, userId])
+    @@index([userId])
+    @@map("one_time_pre_keys")
+}
+
+model Message {
+    id          Int         @id @default(autoincrement())
+    senderId    String
+    recipientId String
+    content     String // include convo_id   // dont want to include timestamp
+    contentType ContentType
+    sentAt      DateTime    @default(now()) // don't need if we store client side
+
+    whisperType Int // should be an enum, look into it later
+    // seenAt         DateTime? 
+    // conversationId String // won't need this if everything stored client side
+
+    sender    User @relation(name: "sender", fields: [senderId], references: [id])
+    recipient User @relation(name: "recipient", fields: [recipientId], references: [id])
+
+    @@map("messages")
+}
+
+enum ContentType {
+    TEXT
+    IMAGE
+    VIDEO
+    AUDIO
+    FILE
 }
 
 // Generally necessary for next-auth, will add if 3rd party providers/sessions/OAuth is necessary
+// Also necessary for session management server-side
 // model Account {
 //     id                String  @id @default(cuid())
 //     userId            String
