@@ -2,11 +2,13 @@ import Link from 'next/link'
 import { useForm, type SubmitHandler } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 
+import { XCircleIcon } from '@heroicons/react/24/solid'
+
 import { Button } from '~/components/common/Button'
 import { TextField } from '~/components/common/Fields'
 import { AuthLayout } from '~/layouts/AuthLayout'
 import { registerSchema, type IRegister } from '~/validation/auth'
-// import { api } from '~/utils/api'
+import { api } from '~/utils/api'
 
 export default function Register() {
   // TODO: Add trpc.registration router
@@ -20,11 +22,16 @@ export default function Register() {
     resolver: zodResolver(registerSchema),
   })
 
-  //   const { mutateAsync } = api.user.register.useMutation()
+  const { mutateAsync } = api.user.register.useMutation()
 
   // TODO: add mutate and reset/redirect to main
-  const onSubmit: SubmitHandler<IRegister> = async data => {
-    console.log(data)
+  const onSubmit: SubmitHandler<IRegister> = async credentials => {
+    console.log(credentials)
+    try {
+      mutateAsync(credentials)
+    } catch (err) {
+      console.error(err)
+    }
   }
 
   return (
@@ -33,13 +40,24 @@ export default function Register() {
       subtitle={
         <>
           Already registered?{' '}
-          <Link href="/login" className="text-purple-700 hover:text-purple-900 hover:underline">
+          <Link href="/login" className="text-purple-700 hover:text-purple-500 hover:underline">
             Sign in
           </Link>{' '}
           to your account.
         </>
       }
     >
+      {/* <div className="rounded-md bg-red-50 p-4 -mt-12 mb-4">
+        <div className="flex">
+          <div className="flex-shrink-0">
+            <XCircleIcon className="h-5 w-5 text-red-400" aria-hidden="true" />
+          </div>
+          <div className="ml-3">
+            <h3 className="text-sm font-medium text-red-800">Log in failed. Please try again.</h3>
+          </div>
+        </div>
+      </div> */}
+
       <form onSubmit={handleSubmit(onSubmit)}>
         <div className="space-y-6">
           <TextField

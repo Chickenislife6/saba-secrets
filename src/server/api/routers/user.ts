@@ -15,7 +15,7 @@ export const userRouter = createTRPCRouter({
     if (userExists) {
       throw new TRPCError({
         code: 'CONFLICT',
-        message: 'User already exists',
+        message: 'Username already exists',
       })
     }
 

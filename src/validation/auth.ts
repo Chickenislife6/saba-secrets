@@ -2,17 +2,17 @@ import { z } from 'zod'
 
 // Client-side error handling/validation done here, server-side is done via the TRPC router
 export const loginSchema = z.object({
-  username: z.string().min(1, 'Username is required').max(100),
+  username: z.string().nonempty('Username is required').max(100).toLowerCase(),
   password: z
     .string()
-    .min(1, 'Password is required')
+    .nonempty('Password is required')
     .min(8, 'Password must be at least 8 characters')
     .max(64, 'Password must be at most 64 characters'),
 })
 
 export const registerSchema = loginSchema
   .extend({
-    confirmPassword: z.string().min(1, 'Password confirmation is required'),
+    confirmPassword: z.string().nonempty('Password confirmation is required'),
     // terms & conditions to be added later
     // terms: z.literal(true, {
     // errorMap: () => ({ message: "You must accept the terms and conditions" }),

@@ -96,14 +96,20 @@ export const authOptions: NextAuthOptions = {
       return session
     },
   },
+  session: {
+    // Since we're using a database adapter with Credentials, NextAuth will not persist sessions
+    // in the database by default, so we'll need to force JWT sessions instead.
+    // More here: https://next-auth.js.org/errors#callback_credentials_jwt_error
+    strategy: 'jwt',
+  },
   jwt: {
     maxAge: 6 * 60 * 60, // 6 hours
+    secret: env.NEXTAUTH_SECRET,
   },
   pages: {
-    // signIn: '/login', // uncomment to use custom login page
-    // signUp: '/signup',
+    signIn: '/login', // uncomment to use custom login page
+    newUser: '/register',
   },
-  secret: env.NEXTAUTH_SECRET,
 }
 
 /**

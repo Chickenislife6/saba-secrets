@@ -12,7 +12,7 @@ const MyApp: AppType<{ session: Session | null }> = ({
   pageProps: { session, ...pageProps },
 }) => {
   return (
-    <SessionProvider session={session}>
+    <>
       <Head>
         <title>Saba Secrets</title>
         <meta
@@ -23,11 +23,14 @@ const MyApp: AppType<{ session: Session | null }> = ({
           name="keywords"
           content="saba secrets, end-to-end encryption, zero knowledge, end-to-end encrypted messaging, secure messaging"
         />
-        <link rel="icon" href="/favicon.ico" />
+        <link rel="icon" href="/favicon-32x32.png" />
+        {/* Styles not allowed in next/head - use next/document instead */}
         {/* <link rel="stylesheet" href="https://rsms.me/inter/inter.css" /> */}
       </Head>
-      <Component {...pageProps} />
-    </SessionProvider>
+      <SessionProvider session={session}>
+        <Component {...pageProps} />
+      </SessionProvider>
+    </>
   )
 }
 
