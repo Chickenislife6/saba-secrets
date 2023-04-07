@@ -46,7 +46,7 @@ model SignedPreKey {
     id        Int
     publicKey String
     signature String
-    userId    String @unique // unique enforces 1-1 constraint
+    userId    String @unique @db.Uuid // unique enforces 1-1 constraint
 
     user User @relation(fields: [userId], references: [id])
 
@@ -57,7 +57,7 @@ model SignedPreKey {
 model OneTimePreKey {
     id        Int
     publicKey String
-    userId    String
+    userId    String @db.Uuid
 
     user User @relation(fields: [userId], references: [id])
 
@@ -68,8 +68,8 @@ model OneTimePreKey {
 
 model Message {
     id          Int         @id @default(autoincrement())
-    senderId    String
-    recipientId String
+    senderId    String      @db.Uuid
+    recipientId String      @db.Uuid
     content     String // include convo_id   // dont want to include timestamp
     contentType ContentType
     sentAt      DateTime    @default(now()) // don't need if we store client side
