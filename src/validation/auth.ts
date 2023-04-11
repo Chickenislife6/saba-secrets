@@ -1,8 +1,16 @@
 import { z } from 'zod'
 
 // Client-side error handling/validation done here, server-side is done via the TRPC router
-export const loginSchema = z.object({
-  username: z.string().nonempty('Username is required').max(100).toLowerCase(),
+export const usernameSchema = z.object({
+  username: z
+    .string()
+    .nonempty('Username is required')
+    .min(5, 'Username must be at least 5 characters')
+    .max(100, 'Username must be at most 100 characters')
+    .toLowerCase(),
+})
+
+export const loginSchema = usernameSchema.extend({
   password: z
     .string()
     .nonempty('Password is required')
