@@ -1,11 +1,11 @@
 import Link from 'next/link'
-import { useCallback } from 'react'
+import { useCallback, useState } from 'react'
 import { useForm, type SubmitHandler } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { signIn } from 'next-auth/react'
-import { XCircleIcon } from '@heroicons/react/24/solid'
 
 import { Button } from '~/components/common/Button'
+import { ErrorAlert } from '~/components/common/ErrorAlert'
 import { TextField } from '~/components/common/Fields'
 import { AuthLayout } from '~/layouts/AuthLayout'
 import { loginSchema, type ILogin } from '~/validation/auth'
@@ -15,17 +15,18 @@ export default function Login() {
     resolver: zodResolver(loginSchema),
   })
 
-  // TODO: add nextauth signin and reset/redirect to main
+  const [errorMessage, setErrorMessage] = useState<string | null>(null)
+
   const onSubmit: SubmitHandler<ILogin> = useCallback(
     async credentials => {
       try {
-        console.log(credentials)
         // Note CSRF is handled via this function
         const res = await signIn('credentials', {
           ...credentials,
           redirect: false,
           callbackUrl: '/',
         })
+
         if (res?.error) {
           // toast.error('Log in failed')
           throw new Error(res.error)
@@ -34,9 +35,10 @@ export default function Login() {
         reset()
       } catch (err) {
         console.error(err)
+        setErrorMessage('Log in failed. Please try again.')
       }
     },
-    [reset]
+    [reset, setErrorMessage]
   )
 
   return (
@@ -52,16 +54,7 @@ export default function Login() {
         </>
       }
     >
-      {/* <div className="rounded-md bg-red-50 p-4 -mt-12 mb-4">
-        <div className="flex">
-          <div className="flex-shrink-0">
-            <XCircleIcon className="h-5 w-5 text-red-400" aria-hidden="true" />
-          </div>
-          <div className="ml-3">
-            <h3 className="text-sm font-medium text-red-800">Log in failed. Please try again.</h3>
-          </div>
-        </div>
-      </div> */}
+      {errorMessage && <ErrorAlert message={errorMessage} />}
 
       <form onSubmit={handleSubmit(onSubmit)}>
         <div className="space-y-6">
