@@ -25,8 +25,8 @@ model User {
     recievedMessages Message[] @relation("recipient")
 
     // Prisma sets this as optional, but it is a required 1-1 relation
-    SignedPreKey   SignedPreKey?
-    OneTimePreKeys OneTimePreKey[]
+    signedPreKey   SignedPreKey?
+    oneTimePreKeys OneTimePreKey[]
 
     // Note name and email will NOT be used, but they are fields generally required by next-auth
     // Will be required for any sort of server-side session management
@@ -43,7 +43,7 @@ model User {
 }
 
 model SignedPreKey {
-    id        Int
+    keyId     Int
     publicKey String
     signature String
     userId    String @unique @db.Uuid // unique enforces 1-1 constraint
@@ -55,13 +55,13 @@ model SignedPreKey {
 }
 
 model OneTimePreKey {
-    id        Int
+    keyId     Int
     publicKey String
     userId    String @db.Uuid
 
     user User @relation(fields: [userId], references: [id])
 
-    @@unique([id, userId])
+    @@unique([keyId, userId])
     @@index([userId])
     @@map("one_time_pre_keys")
 }

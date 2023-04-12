@@ -8,8 +8,10 @@ import { Button } from '~/components/common/Button'
 import { ErrorAlert } from '~/components/common/ErrorAlert'
 import { TextField } from '~/components/common/Fields'
 import { AuthLayout } from '~/layouts/AuthLayout'
-import { registerSchema, type IRegister } from '~/validation/auth'
+import { registerWithPWMatchSchema, type IRegister } from '~/validation/auth'
 import { api } from '~/utils/api'
+import { createNewUserKeys, extractPublicUserKeys } from '~/utils/user/user-keys'
+import { serializePublicUserKeys } from '~/utils/serialize'
 
 export default function Register() {
   const router = useRouter()
@@ -20,7 +22,7 @@ export default function Register() {
     reset,
     formState: { errors, isSubmitting },
   } = useForm<IRegister>({
-    resolver: zodResolver(registerSchema),
+    resolver: zodResolver(registerWithPWMatchSchema),
   })
 
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
@@ -37,9 +39,13 @@ export default function Register() {
         if (!userExists) {
           throw new Error('Username is taken')
         }
-        // create signal keys
 
-        const result = await mutateAsync(credentials)
+        // Create Signal keys
+        const userKeys = await createNewUserKeys()
+        const publicUserKeys = extractPublicUserKeys(userKeys)
+        const serializedUserKeys = serializePublicUserKeys(publicUserKeys)
+
+        const result = await mutateAsync({ ...credentials, ...serializedUserKeys })
         if (result.status === 201) {
           // store and persist user, encrypt using userId as key
 

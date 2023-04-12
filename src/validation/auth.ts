@@ -1,4 +1,5 @@
 import { z } from 'zod'
+import { identityPublicKeySchema, preKeySchema, signedPreKeySchema } from './keys'
 
 // Client-side error handling/validation done here, server-side is done via the TRPC router
 export const usernameSchema = z.object({
@@ -18,18 +19,27 @@ export const loginSchema = usernameSchema.extend({
     .max(64, 'Password must be at most 64 characters'),
 })
 
-export const registerSchema = loginSchema
-  .extend({
-    confirmPassword: z.string().nonempty('Password confirmation is required'),
-    // terms & conditions to be added later
-    // terms: z.literal(true, {
-    // errorMap: () => ({ message: "You must accept the terms and conditions" }),
-    // }),
-  })
-  .refine(({ password, confirmPassword }) => password === confirmPassword, {
+export const registerSchema = loginSchema.extend({
+  confirmPassword: z.string().nonempty('Password confirmation is required'),
+  // terms & conditions to be added later
+  // terms: z.literal(true, {
+  // errorMap: () => ({ message: "You must accept the terms and conditions" }),
+  // }),
+})
+
+export const registerWithPWMatchSchema = registerSchema.refine(
+  ({ password, confirmPassword }) => password === confirmPassword,
+  {
     path: ['confirmPassword'],
     message: 'Passwords do not match',
-  })
+  }
+)
+
+export const registerWithKeysSchema = registerSchema.extend({
+  identityPublicKey: identityPublicKeySchema,
+  signedPreKey: signedPreKeySchema,
+  oneTimePreKey: preKeySchema,
+})
 
 export type ILogin = z.infer<typeof loginSchema>
 export type IRegister = z.infer<typeof registerSchema>

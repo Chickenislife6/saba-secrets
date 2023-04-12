@@ -2,7 +2,7 @@ import { TRPCError } from '@trpc/server'
 import { hash } from 'argon2'
 
 import { createTRPCRouter, publicProcedure } from '~/server/api/trpc'
-import { usernameSchema, registerSchema } from '~/validation/auth'
+import { usernameSchema, registerWithKeysSchema } from '~/validation/auth'
 
 export const userRouter = createTRPCRouter({
   checkUsername: publicProcedure.input(usernameSchema).query(async ({ input, ctx }) => {
@@ -12,11 +12,11 @@ export const userRouter = createTRPCRouter({
       where: { username },
     })
 
-    return !!userExists
+    return userExists === null
   }),
 
-  register: publicProcedure.input(registerSchema).mutation(async ({ input, ctx }) => {
-    const { username, password } = input
+  register: publicProcedure.input(registerWithKeysSchema).mutation(async ({ input, ctx }) => {
+    const { username, password, identityPublicKey, signedPreKey, oneTimePreKey } = input
 
     // This redundancy exists to safeguard against client-side attacks
     const userExists = await ctx.prisma.user.findFirst({
@@ -35,9 +35,18 @@ export const userRouter = createTRPCRouter({
     // Further options can be found here: https://github.com/ranisalt/node-argon2/wiki/Options
     const hashedPassword = await hash(password)
 
-    // TODO: add identity key and signed public prekey
     const result = await ctx.prisma.user.create({
-      data: { username, password: hashedPassword },
+      data: {
+        username,
+        password: hashedPassword,
+        identityPublicKey,
+        signedPreKey: {
+          create: signedPreKey,
+        },
+        oneTimePreKeys: {
+          create: oneTimePreKey,
+        },
+      },
     })
 
     return {
