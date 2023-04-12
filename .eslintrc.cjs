@@ -38,6 +38,7 @@ const config = {
       },
     ],
     '@typescript-eslint/no-misused-promises': ['error', { checksVoidReturn: false }],
+    '@typescript-eslint/no-non-null-assertion': 'off',
     'react-hooks/rules-of-hooks': 'error',
     'react-hooks/exhaustive-deps': 'error',
     'no-var': 'error',
