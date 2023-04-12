@@ -1,4 +1,4 @@
-import { type ReactNode, type InputHTMLAttributes } from 'react'
+import { type InputHTMLAttributes, type ReactNode } from 'react'
 import { type UseFormRegisterReturn } from 'react-hook-form/dist/types/form'
 
 const formClasses =

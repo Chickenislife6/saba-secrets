@@ -1,5 +1,5 @@
 import { KeyHelper } from '@privacyresearch/libsignal-protocol-typescript'
-import type { UserKeys, PublicUserKeys } from './types'
+import type { PublicUserKeys, UserKeys } from './types'
 
 /**
  * Creates a new set of user keys via libsignal's KeyHelper

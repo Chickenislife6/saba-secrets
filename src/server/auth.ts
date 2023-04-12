@@ -1,17 +1,17 @@
+import { PrismaAdapter } from '@next-auth/prisma-adapter'
+import { verify } from 'argon2'
 import { type GetServerSidePropsContext } from 'next'
 import {
   getServerSession,
-  type NextAuthOptions,
   type DefaultSession,
   type DefaultUser,
+  type NextAuthOptions,
 } from 'next-auth'
 import CredentialsProvider from 'next-auth/providers/credentials'
-import { PrismaAdapter } from '@next-auth/prisma-adapter'
-import { verify } from 'argon2'
 
+import { env } from '~/env.mjs'
 import { prisma } from '~/server/db'
 import { loginSchema } from '~/validation/auth'
-import { env } from '~/env.mjs'
 
 /**
  * Module augmentation for `next-auth` types. Allows us to add custom properties to the `session`
@@ -60,7 +60,6 @@ export const authOptions: NextAuthOptions = {
       authorize: async credentials => {
         try {
           const { username, password } = loginSchema.parse(credentials)
-          console.log(username, password)
 
           const result = await prisma.user.findFirst({
             where: { username },

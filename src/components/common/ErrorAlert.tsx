@@ -1,5 +1,5 @@
-import { type ReactNode } from 'react'
 import { XCircleIcon } from '@heroicons/react/24/solid'
+import { type ReactNode } from 'react'
 
 type ErrorAlertProps = {
   message: ReactNode

@@ -1,10 +1,10 @@
 import type {
-  SignedPublicPreKeyType,
-  PreKeyType,
   KeyPairType,
+  PreKeyType,
+  SignedPublicPreKeyType,
 } from '@privacyresearch/libsignal-protocol-typescript'
-import type { PublicUserKeys } from '~/utils/user/types'
 import * as base64 from 'base64-js'
+import type { PublicUserKeys } from '~/utils/user/types'
 
 // Note we use base64 over TextEncoder/TextDeocder due to base64's
 // safer encoding of 0's (not string terminating)

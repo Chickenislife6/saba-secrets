@@ -1,6 +1,6 @@
-import { type ButtonHTMLAttributes } from 'react'
-import Link, { type LinkProps } from 'next/link'
 import clsx, { type ClassValue } from 'clsx'
+import Link, { type LinkProps } from 'next/link'
+import { type ButtonHTMLAttributes } from 'react'
 
 type Variant = 'solid' | 'outline'
 type Color = 'purple' | 'white' | 'gray'

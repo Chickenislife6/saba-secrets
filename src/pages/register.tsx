@@ -1,17 +1,17 @@
+import { zodResolver } from '@hookform/resolvers/zod'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { useCallback, useState } from 'react'
 import { useForm, type SubmitHandler } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
 
 import { Button } from '~/components/common/Button'
 import { ErrorAlert } from '~/components/common/ErrorAlert'
 import { TextField } from '~/components/common/Fields'
 import { AuthLayout } from '~/layouts/AuthLayout'
-import { registerWithPWMatchSchema, type IRegister } from '~/validation/auth'
 import { api } from '~/utils/api'
-import { createNewUserKeys, extractPublicUserKeys } from '~/utils/user/user-keys'
 import { serializePublicUserKeys } from '~/utils/serialize'
+import { createNewUserKeys, extractPublicUserKeys } from '~/utils/user/user-keys'
+import { registerWithPWMatchSchema, type IRegister } from '~/validation/auth'
 
 export default function Register() {
   const router = useRouter()

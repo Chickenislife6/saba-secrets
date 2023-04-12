@@ -6,7 +6,10 @@
         Chat: ChatHeader, ChatMessage, ChatInput
 */
 
-const Placeholder = () => {
-  return <div></div>
+export default function Chats() {
+  return (
+    <div>
+      <h1>Chats</h1>
+    </div>
+  )
 }
-export default Placeholder
