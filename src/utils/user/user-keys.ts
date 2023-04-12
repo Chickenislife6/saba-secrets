@@ -7,12 +7,11 @@ import type { UserKeys, PublicUserKeys } from './types'
 export async function createNewUserKeys() {
   const identityKeyPair = await KeyHelper.generateIdentityKeyPair()
 
-  const keyIds = crypto.getRandomValues(new Uint32Array(2))
+  const keyIds = crypto.getRandomValues(new Uint16Array(2))
 
   const signedPreKey = await KeyHelper.generateSignedPreKey(identityKeyPair, keyIds[0]!)
 
   const oneTimePreKey = await KeyHelper.generatePreKey(keyIds[1]!)
-
 
   return {
     identityKeyPair,
