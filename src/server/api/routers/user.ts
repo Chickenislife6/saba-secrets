@@ -12,7 +12,7 @@ export const userRouter = createTRPCRouter({
       where: { username },
     })
 
-    return !!userExists
+    return userExists === null
   }),
 
   register: publicProcedure.input(registerWithKeysSchema).mutation(async ({ input, ctx }) => {

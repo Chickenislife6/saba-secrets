@@ -7,6 +7,11 @@
 /** @type {import("next").NextConfig} */
 const config = {
   reactStrictMode: true,
+  webpack: config => {
+    config.resolve.fallback = { fs: false }
+
+    return config
+  },
 
   /**
    * If you have the "experimental: { appDir: true }" setting enabled, then you
