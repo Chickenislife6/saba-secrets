@@ -12,10 +12,10 @@ export async function createNewUserKeys() {
   const identityKeyPair = await KeyHelper.generateIdentityKeyPair()
 
   // TODO: make key ids collision resistant
-  const signedPreKeyId = Math.floor(10e8 * Math.random())
+  const signedPreKeyId = Math.floor(10e4 * Math.random())
   const signedPreKey = await KeyHelper.generateSignedPreKey(identityKeyPair, signedPreKeyId)
 
-  const oneTimePreKeyId = Math.floor(10e8 * Math.random())
+  const oneTimePreKeyId = Math.floor(10e4 * Math.random())
   const oneTimePreKey = await KeyHelper.generatePreKey(oneTimePreKeyId)
 
   return {
