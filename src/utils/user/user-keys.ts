@@ -13,6 +13,7 @@ export async function createNewUserKeys() {
 
   const oneTimePreKey = await KeyHelper.generatePreKey(keyIds[1]!)
 
+
   return {
     identityKeyPair,
     signedPreKey,
