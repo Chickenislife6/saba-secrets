@@ -31,7 +31,6 @@ export default function Login() {
           // toast.error('Log in failed')
           throw new Error(res.error)
         }
-
         reset()
       } catch (err) {
         console.error(err)

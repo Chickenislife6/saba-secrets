@@ -60,6 +60,7 @@ export const authOptions: NextAuthOptions = {
       authorize: async credentials => {
         try {
           const { username, password } = loginSchema.parse(credentials)
+          console.log(username, password)
 
           const result = await prisma.user.findFirst({
             where: { username },
@@ -89,7 +90,7 @@ export const authOptions: NextAuthOptions = {
       return token
     },
     session({ session, user }) {
-      if (session.user) {
+      if (session.user && user) {
         session.user.id = user.id
         session.user.username = user.username
       }
