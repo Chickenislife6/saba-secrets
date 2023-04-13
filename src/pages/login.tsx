@@ -1,6 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { signIn } from 'next-auth/react'
 import Link from 'next/link'
+import { useRouter } from 'next/router'
 import { useCallback, useState } from 'react'
 import { useForm, type SubmitHandler } from 'react-hook-form'
 
@@ -11,7 +12,14 @@ import { AuthLayout } from '~/layouts/AuthLayout'
 import { loginSchema, type ILogin } from '~/validation/auth'
 
 export default function Login() {
-  const { register, handleSubmit, reset } = useForm<ILogin>({
+  const router = useRouter()
+
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors, isSubmitting },
+  } = useForm<ILogin>({
     resolver: zodResolver(loginSchema),
   })
 
@@ -24,20 +32,26 @@ export default function Login() {
         const res = await signIn('credentials', {
           ...credentials,
           redirect: false,
-          callbackUrl: '/',
         })
 
-        if (res?.error) {
-          // toast.error('Log in failed')
-          throw new Error(res.error)
+        // TODO: Handle other error types from response
+        if (res?.status === 401) {
+          throw new Error('Invalid username or password. Please try again.')
+        } else if (!res?.ok) {
+          throw new Error('Log in failed. Please try again.')
         }
+
         reset()
+        setErrorMessage(null)
+        void router.push('/chats')
       } catch (err) {
         console.error(err)
-        setErrorMessage('Log in failed. Please try again.')
+        if (err instanceof Error) {
+          setErrorMessage(err.message)
+        }
       }
     },
-    [reset, setErrorMessage]
+    [reset, router]
   )
 
   return (
@@ -64,6 +78,7 @@ export default function Login() {
             autoComplete="username"
             required
             inputRegister={register('username')}
+            errorMessage={errors.username?.message}
           />
           <TextField
             label="Password"
@@ -72,9 +87,10 @@ export default function Login() {
             autoComplete="current-password"
             required
             inputRegister={register('password')}
+            errorMessage={errors.password?.message}
           />
         </div>
-        <Button type="submit" color="purple" className="mt-8 w-full">
+        <Button type="submit" color="purple" className="mt-8 w-full" disabled={isSubmitting}>
           Sign in
         </Button>
       </form>

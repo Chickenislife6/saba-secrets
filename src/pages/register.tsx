@@ -37,7 +37,7 @@ export default function Register() {
       try {
         const userExists = await checkUsername.fetch({ username })
         if (!userExists) {
-          throw new Error('Username is taken')
+          throw new Error('That username is taken. Please try another.')
         }
 
         // Create Signal keys
@@ -52,7 +52,7 @@ export default function Register() {
           reset()
           setErrorMessage(null)
           // success toast for account created
-          await router.push('/login')
+          void router.push('/login')
         }
       } catch (error) {
         console.error(error)
@@ -61,14 +61,17 @@ export default function Register() {
         // TODO: descriptive error messages for other Zod and TRPC errors
         // TODO: test mutation to see if error is thrown via mutateAsync or just returned via
         //       error from useMutation (which will be typed and formatted)
-        if (error instanceof Error && error.message === 'Username is taken') {
+        if (
+          error instanceof Error &&
+          error.message === 'That username is taken. Please try another.'
+        ) {
           setErrorMessage(error.message)
         } else {
           setErrorMessage('Sign up failed. Please try again.')
         }
       }
     },
-    [mutateAsync, checkUsername, setErrorMessage, reset, router]
+    [mutateAsync, checkUsername, reset, router]
   )
 
   return (

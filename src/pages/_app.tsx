@@ -1,16 +1,32 @@
-import { type Session } from 'next-auth'
+import type { NextPage } from 'next'
+import type { Session } from 'next-auth'
 import { SessionProvider } from 'next-auth/react'
-import { type AppType } from 'next/app'
+import type { AppProps } from 'next/app'
 import Head from 'next/head'
+import type { ReactElement, ReactNode } from 'react'
 
 import { api } from '~/utils/api'
 
 import '~/styles/globals.css'
 
-const MyApp: AppType<{ session: Session | null }> = ({
+export type NextPageWithLayout<P = {}, IP = P> = NextPage<P, IP> & {
+  getLayout?: (page: ReactElement) => ReactNode
+}
+
+type AppPropsWithLayout<P = {}> = AppProps<P> & {
+  Component: NextPageWithLayout
+}
+
+type WithSession = {
+  session: Session | null
+}
+
+const MyApp = ({
   Component,
   pageProps: { session, ...pageProps },
-}) => {
+}: AppPropsWithLayout<WithSession>) => {
+  const getLayout = Component.getLayout || (page => page)
+
   return (
     <>
       <Head>
@@ -27,9 +43,7 @@ const MyApp: AppType<{ session: Session | null }> = ({
         {/* Styles not allowed in next/head - use next/document instead */}
         {/* <link rel="stylesheet" href="https://rsms.me/inter/inter.css" /> */}
       </Head>
-      <SessionProvider session={session}>
-        <Component {...pageProps} />
-      </SessionProvider>
+      <SessionProvider session={session}>{getLayout(<Component {...pageProps} />)}</SessionProvider>
     </>
   )
 }

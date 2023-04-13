@@ -22,14 +22,14 @@ const baseStyles: Record<Variant, ClassValue> = {
 const variantStyles: Record<Variant, Record<Color, ClassValue>> = {
   solid: {
     purple:
-      'relative overflow-hidden bg-purple-700 text-white before:absolute before:inset-0 active:before:bg-transparent hover:before:bg-white/10 active:bg-purple-800 active:text-white/80 before:transition-colors',
+      'relative overflow-hidden bg-purple-600 text-white before:absolute before:inset-0 active:before:bg-transparent hover:before:bg-white/10 active:bg-purple-800 active:text-white/80 before:transition-colors',
     white:
-      'bg-white text-purple-900 hover:bg-white/90 active:bg-white/90 active:text-purple-900/70',
+      'bg-white text-purple-700 hover:bg-white/90 active:bg-white/90 active:text-purple-800/70',
     gray: 'bg-gray-800 text-white hover:bg-gray-900 active:bg-gray-800 active:text-white/80',
   },
   outline: {
     purple:
-      'border-purple-300 text-purple-700 hover:border-purple-400 active:bg-purple-100 active:text-purple-700/80',
+      'border-purple-300 text-purple-600 hover:border-purple-400 active:bg-purple-100 active:text-purple-600/80',
     white:
       'border-white-300 text-white-700 hover:border-white-400 active:bg-white-100 active:text-white-700/80',
     gray: 'border-gray-300 text-gray-700 hover:border-gray-400 active:bg-gray-100 active:text-gray-700/80',

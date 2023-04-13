@@ -24,6 +24,8 @@ declare module 'next-auth' {
     user: {
       id: string
       username: string
+      identityPublicKey: string
+      avatar: string | null
       // ...other properties
       // role: UserRole;
     } & DefaultSession['user']
@@ -31,6 +33,8 @@ declare module 'next-auth' {
 
   interface User extends DefaultUser {
     username: string
+    identityPublicKey: string
+    avatar: string | null
     // ...other properties
     // role: UserRole;
   }
@@ -40,6 +44,8 @@ declare module 'next-auth/jwt' {
   interface JWT {
     id: string
     username: string
+    identityPublicKey: string
+    avatar: string | null
   }
 }
 
@@ -73,7 +79,12 @@ export const authOptions: NextAuthOptions = {
 
           if (!isPasswordValid) return null
 
-          return { id: result.id, username }
+          return {
+            id: result.id,
+            username,
+            identityPublicKey: result.identityPublicKey,
+            avatar: result.avatar,
+          }
         } catch {
           return null
         }
@@ -85,13 +96,17 @@ export const authOptions: NextAuthOptions = {
       if (user) {
         token.id = user.id
         token.username = user.username
+        token.identityPublicKey = user.identityPublicKey
+        token.avatar = user.avatar
       }
       return token
     },
-    session({ session, user }) {
-      if (session.user && user) {
-        session.user.id = user.id
-        session.user.username = user.username
+    session({ session, token }) {
+      if (session.user && token) {
+        session.user.id = token.id
+        session.user.username = token.username
+        session.user.identityPublicKey = token.identityPublicKey
+        session.user.avatar = token.avatar
       }
       return session
     },

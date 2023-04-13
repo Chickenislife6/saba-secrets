@@ -37,18 +37,26 @@ const config = {
         fixStyle: 'inline-type-imports',
       },
     ],
+    '@typescript-eslint/ban-types': [
+      'error',
+      {
+        types: {
+          '{}': false,
+        },
+      },
+    ],
     '@typescript-eslint/no-misused-promises': ['error', { checksVoidReturn: false }],
     '@typescript-eslint/no-non-null-assertion': 'off',
-    'react-hooks/rules-of-hooks': 'error',
-    'react-hooks/exhaustive-deps': 'error',
-    'no-var': 'error',
-    'no-console': ['error', { allow: ['warn', 'error'] }],
-    'no-unused-vars': [
+    '@typescript-eslint/no-unused-vars': [
       'error',
       {
         args: 'none',
       },
     ],
+    'react-hooks/rules-of-hooks': 'error',
+    'react-hooks/exhaustive-deps': 'error',
+    'no-var': 'error',
+    'no-console': ['error', { allow: ['warn', 'error'] }],
     'no-unused-expressions': [
       'error',
       {
