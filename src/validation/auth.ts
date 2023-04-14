@@ -44,5 +44,5 @@ export const registerWithKeysSchema = registerSchema.extend({
   oneTimePreKey: preKeySchema,
 })
 
-export type ILogin = z.infer<typeof loginSchema>
-export type IRegister = z.infer<typeof registerSchema>
+export type LoginFields = z.infer<typeof loginSchema>
+export type RegisterFields = z.infer<typeof registerSchema>
