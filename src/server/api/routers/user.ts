@@ -2,7 +2,7 @@ import { TRPCError } from '@trpc/server'
 import { hash } from 'argon2'
 
 import { createTRPCRouter, publicProcedure } from '~/server/api/trpc'
-import { registerWithKeysSchema, usernameSchema } from '~/validation/auth'
+import { usernameSchema, registerWithKeysSchema } from '~/validation/auth'
 
 export const userRouter = createTRPCRouter({
   checkUsername: publicProcedure.input(usernameSchema).query(async ({ input, ctx }) => {

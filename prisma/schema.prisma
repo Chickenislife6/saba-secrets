@@ -17,7 +17,7 @@ datasource db {
 model User {
     id                String  @id @default(uuid()) @db.Uuid // use pg's dedicated uuid type
     username          String  @unique @db.VarChar(200)
-    password          String  @db.VarChar(45) // hashLength = 32, digestLength = 43
+    password          String
     avatar            String?
     identityPublicKey String
 
@@ -81,7 +81,6 @@ model Message {
     sender    User @relation(name: "sender", fields: [senderId], references: [id])
     recipient User @relation(name: "recipient", fields: [recipientId], references: [id])
 
-    @@index([recipientId])
     @@map("messages")
 }
 
