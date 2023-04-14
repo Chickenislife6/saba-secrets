@@ -11,17 +11,27 @@ import { AuthLayout } from '~/layouts/AuthLayout'
 import { api } from '~/utils/api'
 import { serializePublicUserKeys } from '~/utils/serialize'
 import { createNewUserKeys, extractPublicUserKeys } from '~/utils/user/user-keys'
-import { registerWithPWMatchSchema, type IRegister } from '~/validation/auth'
+import { registerWithPWMatchSchema, type RegisterFields } from '~/validation/auth'
 
 export default function Register() {
   const router = useRouter()
+
+  const q = api.messages.loadNewMessages.useQuery(
+    { timestamp: '10' },
+    {
+      staleTime: Infinity,
+      onSuccess: () => {
+        return 0
+      },
+    }
+  )
 
   const {
     register,
     handleSubmit,
     reset,
     formState: { errors, isSubmitting },
-  } = useForm<IRegister>({
+  } = useForm<RegisterFields>({
     resolver: zodResolver(registerWithPWMatchSchema),
   })
 
@@ -31,7 +41,7 @@ export default function Register() {
   const checkUsername = api.useContext().user.checkUsername
   const { mutateAsync, isLoading } = api.user.register.useMutation()
 
-  const onSubmit: SubmitHandler<IRegister> = useCallback(
+  const onSubmit: SubmitHandler<RegisterFields> = useCallback(
     async credentials => {
       const { username } = credentials
       try {
@@ -97,6 +107,7 @@ export default function Register() {
             type="username"
             autoComplete="username"
             required
+            autoFocus
             inputRegister={register('username')}
             errorMessage={errors.username?.message}
           />

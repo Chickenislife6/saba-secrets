@@ -2,7 +2,6 @@ import { z } from 'zod'
 import { identityPublicKeySchema, preKeySchema, signedPreKeySchema } from './keys'
 
 // Client-side error handling/validation done here, server-side is done via the TRPC router
-
 export const loginSchema = z.object({
   username: z.string().nonempty('Username is required').toLowerCase(),
   password: z.string().nonempty('Password is required'),
@@ -44,5 +43,5 @@ export const registerWithKeysSchema = registerSchema.extend({
   oneTimePreKey: preKeySchema,
 })
 
-export type ILogin = z.infer<typeof loginSchema>
-export type IRegister = z.infer<typeof registerSchema>
+export type LoginFields = z.infer<typeof loginSchema>
+export type RegisterFields = z.infer<typeof registerSchema>

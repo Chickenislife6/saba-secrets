@@ -8,6 +8,8 @@
 const config = {
   reactStrictMode: true,
   webpack: config => {
+    // This is to resolve client side error with `fs` dependency from libsignal,
+    // as `fs` is not available in the browser.
     config.resolve.fallback = { fs: false }
 
     return config

@@ -9,7 +9,7 @@ import { Button } from '~/components/common/Button'
 import { ErrorAlert } from '~/components/common/ErrorAlert'
 import { TextField } from '~/components/common/Fields'
 import { AuthLayout } from '~/layouts/AuthLayout'
-import { loginSchema, type ILogin } from '~/validation/auth'
+import { loginSchema, type LoginFields } from '~/validation/auth'
 
 export default function Login() {
   const router = useRouter()
@@ -19,13 +19,13 @@ export default function Login() {
     handleSubmit,
     reset,
     formState: { errors, isSubmitting },
-  } = useForm<ILogin>({
+  } = useForm<LoginFields>({
     resolver: zodResolver(loginSchema),
   })
 
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
 
-  const onSubmit: SubmitHandler<ILogin> = useCallback(
+  const onSubmit: SubmitHandler<LoginFields> = useCallback(
     async credentials => {
       try {
         // Note CSRF is handled via this function
@@ -77,6 +77,7 @@ export default function Login() {
             type="username"
             autoComplete="username"
             required
+            autoFocus
             inputRegister={register('username')}
             errorMessage={errors.username?.message}
           />
