@@ -9,15 +9,18 @@
 */
 
 import { signOut, useSession } from 'next-auth/react'
-import Link from 'next/link'
 import { type ReactElement } from 'react'
 
+import { Link } from '~/components/common/Link'
+import { useMessages } from '~/hooks/use-messages'
 import { ChatLayout } from '~/layouts/ChatLayout'
 
 export default function Chats() {
   const { data } = useSession({
     required: true,
   })
+
+  const messages = useMessages()
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center gap-4">
@@ -27,9 +30,7 @@ export default function Chats() {
           <p className="text-center text-lg">
             <span>Username: {data.user.username}</span>
             <br />
-            <Link href="/profile" className="text-purple-700 hover:text-purple-500 hover:underline">
-              Go to profile
-            </Link>
+            <Link href="/profile">Go to profile</Link>
           </p>
           <button
             className="rounded-full bg-black/10 px-10 py-3 font-semibold text-black no-underline transition hover:bg-black/20"
