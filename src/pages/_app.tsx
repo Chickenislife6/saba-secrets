@@ -30,7 +30,7 @@ const MyApp = ({
   return (
     <>
       <Head>
-        <title>Saba Secrets</title>
+        <title>SabaSecrets</title>
         <meta
           name="description"
           content="A web-based end-to-end encrypted messaging app based off the Signal Protocol"
@@ -39,7 +39,7 @@ const MyApp = ({
           name="keywords"
           content="saba secrets, end-to-end encryption, zero knowledge, end-to-end encrypted messaging, secure messaging"
         />
-        <link rel="icon" href="/favicon-32x32.png" />
+        <link rel="icon" href="/favicon-bgp.ico" />
         {/* Styles not allowed in next/head - use next/document instead */}
         {/* <link rel="stylesheet" href="https://rsms.me/inter/inter.css" /> */}
       </Head>

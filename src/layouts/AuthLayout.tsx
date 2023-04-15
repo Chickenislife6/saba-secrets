@@ -1,7 +1,8 @@
 import Link from 'next/link'
-import { type ReactNode, type SVGProps } from 'react'
+import type { ReactNode, SVGProps } from 'react'
 
-// import Logo
+import Logo from '~/components/logos/logo-bgp'
+
 type AuthLayoutProps = {
   title: ReactNode
   subtitle?: ReactNode
@@ -30,7 +31,7 @@ export function AuthLayout({ title, subtitle, children }: AuthLayoutProps) {
     <div className="flex min-h-full overflow-hidden pt-16 sm:py-28">
       <main className="mx-auto flex w-full max-w-2xl flex-col px-4 sm:px-6">
         <Link href="/" aria-label="Home">
-          {/* TODO: insert Logo */}
+          <Logo className="mx-auto h-16 w-auto sm:h-28 -my-8" />
         </Link>
         <div className="relative mt-12 sm:mt-16">
           <BackgroundIllustration
@@ -38,10 +39,14 @@ export function AuthLayout({ title, subtitle, children }: AuthLayoutProps) {
             height="1090"
             className="absolute -top-7 left-1/2 -z-10 h-[788px] -translate-x-1/2 stroke-gray-300/30 [mask-image:linear-gradient(to_bottom,white_20%,transparent_75%)] sm:-top-9 sm:h-auto"
           />
-          <h1 className="text-center text-2xl font-medium tracking-tight text-gray-900">{title}</h1>
-          {subtitle && <p className="mt-3 text-center text-lg text-gray-600">{subtitle}</p>}
+          <h1 className="text-center text-2xl sm:text-3xl font-medium tracking-tight text-gray-900">
+            {title}
+          </h1>
+          {subtitle && (
+            <p className="mt-3 text-center text-base sm:text-xl text-gray-600">{subtitle}</p>
+          )}
         </div>
-        <div className="-mx-4 mt-10 flex-auto bg-white py-10 px-4 shadow-2xl shadow-gray-900/10 sm:mx-0 sm:flex-none sm:rounded-5xl sm:p-24">
+        <div className="-mx-4 mt-6 flex-auto bg-white py-10 px-4 shadow-2xl shadow-gray-900/10 sm:mx-0 sm:flex-none sm:rounded-5xl sm:p-24">
           {children}
         </div>
       </main>
