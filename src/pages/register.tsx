@@ -1,5 +1,4 @@
 import { zodResolver } from '@hookform/resolvers/zod'
-import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { useCallback, useState } from 'react'
 import { useForm, type SubmitHandler } from 'react-hook-form'
@@ -7,6 +6,7 @@ import { useForm, type SubmitHandler } from 'react-hook-form'
 import { Button } from '~/components/common/Button'
 import { ErrorAlert } from '~/components/common/ErrorAlert'
 import { TextField } from '~/components/common/Fields'
+import { Link } from '~/components/common/Link'
 import { AuthLayout } from '~/layouts/AuthLayout'
 import { api } from '~/utils/api'
 import { serializePublicUserKeys } from '~/utils/serialize'
@@ -79,11 +79,7 @@ export default function Register() {
       title="Create an account"
       subtitle={
         <>
-          Already registered?{' '}
-          <Link href="/login" className="text-purple-700 hover:text-purple-500 hover:underline">
-            Sign in
-          </Link>{' '}
-          to your account.
+          Already registered? <Link href="/login">Sign in</Link> to your account.
         </>
       }
     >

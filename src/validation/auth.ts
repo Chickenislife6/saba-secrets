@@ -2,6 +2,10 @@ import { z } from 'zod'
 import { identityPublicKeySchema, preKeySchema, signedPreKeySchema } from './keys'
 
 // Client-side error handling/validation done here, server-side is done via the TRPC router
+const MIN_USERNAME_LENGTH = 5
+const MAX_USERNAME_LENGTH = 32
+const MIN_PASSWORD_LENGTH = 8
+const MAX_PASSWORD_LENGTH = 64
 
 export const loginSchema = z.object({
   username: z.string().nonempty('Username is required').toLowerCase(),
@@ -12,8 +16,8 @@ export const usernameSchema = z.object({
   username: z
     .string()
     .nonempty('Username is required')
-    .min(5, 'Username must be at least 5 characters')
-    .max(100, 'Username must be at most 100 characters')
+    .min(MIN_USERNAME_LENGTH, `Username must be at least ${MIN_USERNAME_LENGTH} characters`)
+    .max(MAX_USERNAME_LENGTH, `Username must be at most ${MAX_USERNAME_LENGTH} characters`)
     .toLowerCase(),
 })
 
@@ -21,8 +25,8 @@ export const registerSchema = usernameSchema.extend({
   password: z
     .string()
     .nonempty('Password is required')
-    .min(8, 'Password must be at least 8 characters')
-    .max(64, 'Password must be at most 64 characters'),
+    .min(MIN_PASSWORD_LENGTH, `Password must be at least ${MIN_PASSWORD_LENGTH} characters`)
+    .max(MAX_PASSWORD_LENGTH, `Password must be at most ${MAX_PASSWORD_LENGTH} characters`),
   confirmPassword: z.string().nonempty('Password confirmation is required'),
   // terms & conditions to be added later
   // terms: z.literal(true, {

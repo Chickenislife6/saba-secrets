@@ -1,4 +1,4 @@
-import { type InputHTMLAttributes, type ReactNode } from 'react'
+import { forwardRef, type InputHTMLAttributes, type ReactNode } from 'react'
 import { type UseFormRegisterReturn } from 'react-hook-form/dist/types/form'
 
 const formClasses =
@@ -34,20 +34,16 @@ type TextFieldProps = {
   errorMessage?: string
 } & InputHTMLAttributes<HTMLInputElement>
 
-export function TextField({
-  id,
-  label,
-  type = 'text',
-  className,
-  inputRegister,
-  errorMessage,
-  ...props
-}: TextFieldProps) {
+export const TextField = forwardRef<HTMLInputElement, TextFieldProps>(function TextField(
+  props,
+  ref
+) {
+  const { id, label, type = 'text', className, inputRegister, errorMessage, ...rest } = props
   return (
     <div className={className}>
       {label && <Label id={id}>{label}</Label>}
-      <input id={id} type={type} {...inputRegister} {...props} className={formClasses} />
+      <input id={id} type={type} ref={ref} {...inputRegister} {...rest} className={formClasses} />
       {errorMessage && <ErrorMessage message={errorMessage} />}
     </div>
   )
-}
+})

@@ -1,6 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { signIn } from 'next-auth/react'
-import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { useCallback, useState } from 'react'
 import { useForm, type SubmitHandler } from 'react-hook-form'
@@ -8,6 +7,7 @@ import { useForm, type SubmitHandler } from 'react-hook-form'
 import { Button } from '~/components/common/Button'
 import { ErrorAlert } from '~/components/common/ErrorAlert'
 import { TextField } from '~/components/common/Fields'
+import { Link } from '~/components/common/Link'
 import { AuthLayout } from '~/layouts/AuthLayout'
 import { loginSchema, type LoginFields } from '~/validation/auth'
 
@@ -59,11 +59,7 @@ export default function Login() {
       title="Sign in to your account"
       subtitle={
         <>
-          Don’t have an account?{' '}
-          <Link href="/register" className="text-purple-700 hover:text-purple-500 hover:underline">
-            Sign up
-          </Link>{' '}
-          to get started.
+          Don’t have an account? <Link href="/register">Sign up</Link> to get started.
         </>
       }
     >
