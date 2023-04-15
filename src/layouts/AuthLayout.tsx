@@ -29,9 +29,9 @@ function BackgroundIllustration(props: SVGProps<SVGSVGElement>) {
 export function AuthLayout({ title, subtitle, children }: AuthLayoutProps) {
   return (
     <div className="flex min-h-full overflow-hidden pt-16 sm:py-28">
-      <main className="mx-auto flex w-full max-w-2xl flex-col px-4 sm:px-6">
-        <Link href="/" aria-label="Home">
-          <Logo className="mx-auto h-16 w-auto sm:h-28 -my-8" />
+      <main className="flex mx-auto justify-center w-full max-w-2xl flex-col px-4 sm:px-6">
+        <Link href="/" aria-label="Home" className="mx-auto -my-8">
+          <Logo className="h-16 w-auto sm:h-28" />
         </Link>
         <div className="relative mt-12 sm:mt-16">
           <BackgroundIllustration
@@ -43,10 +43,10 @@ export function AuthLayout({ title, subtitle, children }: AuthLayoutProps) {
             {title}
           </h1>
           {subtitle && (
-            <p className="mt-3 text-center text-base sm:text-xl text-gray-600">{subtitle}</p>
+            <p className="mt-3 text-center text-base sm:text-lg text-gray-600">{subtitle}</p>
           )}
         </div>
-        <div className="-mx-4 mt-6 flex-auto bg-white py-10 px-4 shadow-2xl shadow-gray-900/10 sm:mx-0 sm:flex-none sm:rounded-5xl sm:p-24">
+        <div className="-mx-4 mt-4 flex-auto bg-white py-8 px-4 shadow-2xl shadow-gray-900/10 sm:mx-0 sm:flex-none sm:rounded-5xl sm:px-24 sm:py-20">
           {children}
         </div>
       </main>
