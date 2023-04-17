@@ -21,7 +21,6 @@ model User {
     avatar            String?
     identityPublicKey String
 
-    sentMessages     Message[] @relation("sender")
     recievedMessages Message[] @relation("recipient")
 
     // Prisma sets this as optional, but it is a required 1-1 relation
@@ -66,31 +65,26 @@ model OneTimePreKey {
     @@map("one_time_pre_keys")
 }
 
+// enc_message_body = signal_encrypt({groupId, messageContent, timestamp, sender}, symmetricSignalKey)
+// content = encrypt(enc_message_body, recipientPK)
 model Message {
-    id          Int         @id @default(autoincrement())
-    senderId    String
-    recipientId String
-    content     String // include convo_id   // dont want to include timestamp
-    contentType ContentType
-    sentAt      DateTime    @default(now()) // don't need if we store client side
+    id           String @id @default(cuid())
+    recipientId  String
+    message_body String // include convo_id   // dont want to include timestamp
 
-    whisperType Int // should be an enum, look into it later
-    // seenAt         DateTime? 
-    // conversationId String // won't need this if everything stored client side
-
-    sender    User @relation(name: "sender", fields: [senderId], references: [id])
     recipient User @relation(name: "recipient", fields: [recipientId], references: [id])
 
+    @@index([recipientId])
     @@map("messages")
 }
 
-enum ContentType {
-    TEXT
-    IMAGE
-    VIDEO
-    AUDIO
-    FILE
-}
+// enum ContentType {
+//     TEXT
+//     IMAGE
+//     VIDEO
+//     AUDIO
+//     FILE
+// }
 
 // Generally necessary for next-auth, will add if 3rd party providers/sessions/OAuth is necessary
 // Also necessary for session management server-side
