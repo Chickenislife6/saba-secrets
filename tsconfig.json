@@ -17,8 +17,9 @@
     "incremental": true,
     "noUncheckedIndexedAccess": true,
     "baseUrl": ".",
+    "allowSyntheticDefaultImports": true,
     "paths": {
-      "~/*": ["./src/*"]
+      "~/*": ["./src/*", "./*"]
     }
   },
   "include": [".eslintrc.cjs", "next-env.d.ts", "**/*.ts", "**/*.tsx", "**/*.cjs", "**/*.mjs"],

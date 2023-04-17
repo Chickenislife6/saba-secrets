@@ -22,7 +22,7 @@ type ErrorMessageProps = {
 }
 
 function ErrorMessage({ message }: ErrorMessageProps) {
-  return <div className="text-red-700 text-sm">{message}</div>
+  return <div className="text-sm text-red-700">{message}</div>
 }
 
 type TextFieldProps = {

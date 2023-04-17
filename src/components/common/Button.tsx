@@ -29,7 +29,7 @@ const variantStyles: Record<Variant, Record<Color, ClassValue>> = {
   },
   outline: {
     purple:
-      'border-purple-300 text-purple-600 hover:border-purple-400 active:bg-purple-100 active:text-purple-600/80',
+      'border-purple-300 text-purple-600 hover:border-purple-400 before:insert-0 before:transition-colors active:bg-purple-100 active:text-purple-600/80',
     white:
       'border-white-300 text-white-700 hover:border-white-400 active:bg-white-100 active:text-white-700/80',
     gray: 'border-gray-300 text-gray-700 hover:border-gray-400 active:bg-gray-100 active:text-gray-700/80',

@@ -28,10 +28,10 @@ function BackgroundIllustration(props: SVGProps<SVGSVGElement>) {
 
 export function AuthLayout({ title, subtitle, children }: AuthLayoutProps) {
   return (
-    <div className="flex min-h-full overflow-hidden pt-16 sm:py-28">
-      <main className="flex mx-auto justify-center w-full max-w-2xl flex-col px-4 sm:px-6">
-        <Link href="/" aria-label="Home" className="mx-auto -my-8">
-          <Logo className="h-16 w-auto sm:h-28" />
+    <div className="flex h-screen w-screen flex-col items-center justify-center overflow-hidden">
+      <main className="mx-auto flex w-full max-w-2xl flex-col justify-center px-4 sm:px-6">
+        <Link href="/" aria-label="Home" className="-my-8 mx-auto">
+          <Logo className="h-16 sm:h-24" />
         </Link>
         <div className="relative mt-12 sm:mt-16">
           <BackgroundIllustration
@@ -39,14 +39,14 @@ export function AuthLayout({ title, subtitle, children }: AuthLayoutProps) {
             height="1090"
             className="absolute -top-7 left-1/2 -z-10 h-[788px] -translate-x-1/2 stroke-gray-300/30 [mask-image:linear-gradient(to_bottom,white_20%,transparent_75%)] sm:-top-9 sm:h-auto"
           />
-          <h1 className="text-center text-2xl sm:text-3xl font-medium tracking-tight text-gray-900">
+          <h1 className="text-center text-2xl font-medium tracking-tight text-gray-900 ">
             {title}
           </h1>
           {subtitle && (
-            <p className="mt-3 text-center text-base sm:text-lg text-gray-600">{subtitle}</p>
+            <p className="mt-3 text-center text-sm text-gray-500 sm:text-base">{subtitle}</p>
           )}
         </div>
-        <div className="-mx-4 mt-4 flex-auto bg-white py-8 px-4 shadow-2xl shadow-gray-900/10 sm:mx-0 sm:flex-none sm:rounded-5xl sm:px-24 sm:py-20">
+        <div className="-mx-4 mt-4 flex-auto bg-white px-4 py-8 shadow-2xl shadow-gray-900/10 sm:mx-12 sm:flex-none sm:rounded-3xl sm:px-16 sm:py-20">
           {children}
         </div>
       </main>
