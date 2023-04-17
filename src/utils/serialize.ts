@@ -92,10 +92,10 @@ export function deserializeKeyPair(key: KeyPairType<string>): KeyPairType<ArrayB
 }
 
 // Buffer/String conversions
-function bufferToString(buffer: ArrayBuffer): string {
+export function bufferToString(buffer: ArrayBuffer): string {
   return base64.fromByteArray(new Uint8Array(buffer))
 }
 
-function stringToBuffer(str: string): ArrayBuffer {
+export function stringToBuffer(str: string): ArrayBuffer {
   return base64.toByteArray(str).buffer
 }
