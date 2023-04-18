@@ -17,41 +17,34 @@ export default function Login() {
   const {
     register,
     handleSubmit,
-    reset,
     formState: { errors, isSubmitting },
   } = useForm<LoginFields>({
     resolver: zodResolver(loginSchema),
   })
 
+  // Prefer error alert over toast for persist, standard UX
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
 
   const onSubmit: SubmitHandler<LoginFields> = useCallback(
     async credentials => {
-      try {
-        // Note CSRF is handled via this function
-        const res = await signIn('credentials', {
-          ...credentials,
-          redirect: false,
-        })
+      // Note CSRF is handled via this function
+      const res = await signIn('credentials', {
+        ...credentials,
+        redirect: false,
+      })
 
-        // TODO: Handle other error types from response
-        if (res?.status === 401) {
-          throw new Error('Invalid username or password. Please try again.')
-        } else if (!res?.ok) {
-          throw new Error('Log in failed. Please try again.')
-        }
-
-        reset()
+      console.log(res)
+      // TODO: Handle other error types from response
+      if (res?.status === 401) {
+        return setErrorMessage('Invalid username or password. Please try again.')
+      } else if (!res?.ok) {
+        return setErrorMessage('Log in failed. Please try again.')
+      } else {
         setErrorMessage(null)
         void router.push('/chats')
-      } catch (err) {
-        console.error(err)
-        if (err instanceof Error) {
-          setErrorMessage(err.message)
-        }
       }
     },
-    [reset, router]
+    [router]
   )
 
   return (
