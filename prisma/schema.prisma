@@ -21,7 +21,6 @@ model User {
     avatar            String?
     identityPublicKey String
 
-    sentMessages     Message[] @relation("sender")
     recievedMessages Message[] @relation("recipient")
 
     // Prisma sets this as optional, but it is a required 1-1 relation
@@ -66,32 +65,39 @@ model OneTimePreKey {
     @@map("one_time_pre_keys")
 }
 
+// Message Encryption
+// msg = { convo_id, timestamp, content, content_type }
+// msg_ciphertext = signal_encrypt(msg, symmetricSignalKey) -> encrypted on Signal Protocol ratchet
+//    Note libsignal will return an object of the ciphertext body and its whisper type,
+//    for this, since everything will need to be sent/encrypted/stored as strings, consider 
+//    ciphertext to only be the ciphertext.body, rather than including the whipser type
+
+// Method 1: Encrypt on both users
+// envelope = encrypt(whisper_type || msg_ciphertext, sender_identity_SK)
+// body_cipher = encrypt(sender_id || envelope, recipient_identity_PK)
+
+// Method 2: Encrypt on only recipient
+// content = encrypt(sender_id || whisper_type || msg_ciphertext, recipient_identity_PK)
+
+// Any form of AES encryption will perform more than fast enough for the purposes of encryption/decryption
 model Message {
-    id          Int         @id @default(autoincrement())
-    senderId    String      @db.Uuid
-    recipientId String      @db.Uuid
-    timestamp   DateTime    @default(now())
-    content     String // include convo_id  
-    contentType ContentType
-
-    whisperType Int // should be an enum, look into it later
-    // seenAt         DateTime? 
-    // conversationId String // won't need this if everything stored client side
-
-    sender    User @relation(name: "sender", fields: [senderId], references: [id])
+    id          String @id @default(cuid())
+    recipientId String @db.Uuid
+    body        String
+    
     recipient User @relation(name: "recipient", fields: [recipientId], references: [id])
 
     @@index([recipientId])
     @@map("messages")
 }
 
-enum ContentType {
-    TEXT
-    IMAGE
-    VIDEO
-    AUDIO
-    FILE
-}
+// enum ContentType {
+//     TEXT
+//     IMAGE
+//     VIDEO
+//     AUDIO
+//     FILE
+// }
 
 // Generally necessary for next-auth, will add if 3rd party providers/sessions/OAuth is necessary
 // Also necessary for session management server-side
