@@ -1,13 +1,14 @@
 <!-- # Saba Secrets -->
 <div align="center">
-<img width="192px" alt="logo" src="public/icon-192x192.png">
-<br>
-<h1>🔒 Saba Secrets 🔒</h1>
+<img width="192px" alt="logo" src="public/logo-bgp-512x512.png">
+<h1 style="font-size:3rem;font-weight:700;">🔒 Saba Secrets 🔒</h1>
 <br>
 </div>
 
 This is a prototype of a full-stack, web-based E2EE messaging application based on the [T3 Stack](https://create.t3.gg/).
 
+![New login screen, desktop](public/login-base.jpg)
+<!-- ![New login screen, mobile](public/login-mobile.jpg)  -->
 ![Figma prototype login screen](public/login.png)
 ![Figma prototype chat screen](public/home_chat.png)
 
@@ -26,6 +27,9 @@ Before modifying code, make sure you have the [ESLint](https://eslint.org/), [Pr
 ```json
 {
   "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "source.organizeImports": true
+  },
   "editor.defaultFormatter": "esbenp.prettier-vscode",
   "[prisma]": {
     "editor.defaultFormatter": "Prisma.prisma"

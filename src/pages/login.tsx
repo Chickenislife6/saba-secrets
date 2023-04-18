@@ -1,42 +1,57 @@
-import Link from 'next/link'
-import { useCallback } from 'react'
-import { useForm, type SubmitHandler } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { signIn } from 'next-auth/react'
-import { XCircleIcon } from '@heroicons/react/24/solid'
+import { useRouter } from 'next/router'
+import { useCallback, useState } from 'react'
+import { useForm, type SubmitHandler } from 'react-hook-form'
 
 import { Button } from '~/components/common/Button'
+import { ErrorAlert } from '~/components/common/ErrorAlert'
 import { TextField } from '~/components/common/Fields'
+import { Link } from '~/components/common/Link'
 import { AuthLayout } from '~/layouts/AuthLayout'
-import { loginSchema, type ILogin } from '~/validation/auth'
+import { loginSchema, type LoginFields } from '~/validation/auth'
 
 export default function Login() {
-  const { register, handleSubmit, reset } = useForm<ILogin>({
+  const router = useRouter()
+
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors, isSubmitting },
+  } = useForm<LoginFields>({
     resolver: zodResolver(loginSchema),
   })
 
-  // TODO: add nextauth signin and reset/redirect to main
-  const onSubmit: SubmitHandler<ILogin> = useCallback(
+  const [errorMessage, setErrorMessage] = useState<string | null>(null)
+
+  const onSubmit: SubmitHandler<LoginFields> = useCallback(
     async credentials => {
       try {
-        console.log(credentials)
         // Note CSRF is handled via this function
         const res = await signIn('credentials', {
           ...credentials,
           redirect: false,
-          callbackUrl: '/',
         })
-        if (res?.error) {
-          // toast.error('Log in failed')
-          throw new Error(res.error)
+
+        // TODO: Handle other error types from response
+        if (res?.status === 401) {
+          throw new Error('Invalid username or password. Please try again.')
+        } else if (!res?.ok) {
+          throw new Error('Log in failed. Please try again.')
         }
 
         reset()
+        setErrorMessage(null)
+        void router.push('/chats')
       } catch (err) {
         console.error(err)
+        if (err instanceof Error) {
+          setErrorMessage(err.message)
+        }
       }
     },
-    [reset]
+    [reset, router]
   )
 
   return (
@@ -44,24 +59,11 @@ export default function Login() {
       title="Sign in to your account"
       subtitle={
         <>
-          Don’t have an account?{' '}
-          <Link href="/register" className="text-purple-700 hover:text-purple-500 hover:underline">
-            Sign up
-          </Link>{' '}
-          to get started.
+          Don’t have an account? <Link href="/register">Sign up</Link> to get started.
         </>
       }
     >
-      {/* <div className="rounded-md bg-red-50 p-4 -mt-12 mb-4">
-        <div className="flex">
-          <div className="flex-shrink-0">
-            <XCircleIcon className="h-5 w-5 text-red-400" aria-hidden="true" />
-          </div>
-          <div className="ml-3">
-            <h3 className="text-sm font-medium text-red-800">Log in failed. Please try again.</h3>
-          </div>
-        </div>
-      </div> */}
+      {errorMessage && <ErrorAlert message={errorMessage} />}
 
       <form onSubmit={handleSubmit(onSubmit)}>
         <div className="space-y-6">
@@ -70,8 +72,10 @@ export default function Login() {
             id="username"
             type="username"
             autoComplete="username"
+            autoFocus
             required
             inputRegister={register('username')}
+            errorMessage={errors.username?.message}
           />
           <TextField
             label="Password"
@@ -80,9 +84,10 @@ export default function Login() {
             autoComplete="current-password"
             required
             inputRegister={register('password')}
+            errorMessage={errors.password?.message}
           />
         </div>
-        <Button type="submit" color="purple" className="mt-8 w-full">
+        <Button type="submit" color="purple" className="mt-8 w-full" disabled={isSubmitting}>
           Sign in
         </Button>
       </form>
