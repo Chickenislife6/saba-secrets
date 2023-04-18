@@ -27,11 +27,10 @@ export default function Chats() {
       <h1 className="text-center text-2xl font-extrabold">Chats</h1>
       {data && (
         <>
-          <p className="text-center text-lg">
-            <span>Username: {data.user.username}</span>
-            <br />
+          <div className="text-center text-lg">
+            <p>Username: {data.user.username}</p>
             <Link href="/profile">Go to profile</Link>
-          </p>
+          </div>
           <button
             className="rounded-full bg-black/10 px-10 py-3 font-semibold text-black no-underline transition hover:bg-black/20"
             onClick={() =>

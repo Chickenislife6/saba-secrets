@@ -30,7 +30,7 @@ export function AuthLayout({ title, subtitle, children }: AuthLayoutProps) {
   return (
     <div className="flex h-screen w-screen flex-col items-center justify-center overflow-hidden">
       <main className="mx-auto flex w-full max-w-2xl flex-col justify-center px-4 sm:px-6">
-        <Link href="/" aria-label="Home" className="-my-8 mx-auto">
+        <Link href="/" aria-label="Home" className="-my-10 mx-auto">
           <Logo className="h-16 sm:h-24" />
         </Link>
         <div className="relative mt-12 sm:mt-16">
@@ -43,10 +43,10 @@ export function AuthLayout({ title, subtitle, children }: AuthLayoutProps) {
             {title}
           </h1>
           {subtitle && (
-            <p className="mt-3 text-center text-sm text-gray-500 sm:text-base">{subtitle}</p>
+            <p className="mt-2 text-center text-sm text-gray-500 sm:text-base">{subtitle}</p>
           )}
         </div>
-        <div className="-mx-4 mt-4 flex-auto bg-white px-4 py-8 shadow-2xl shadow-gray-900/10 sm:mx-12 sm:flex-none sm:rounded-3xl sm:px-16 sm:py-20">
+        <div className="-mx-4 mt-4 flex-auto bg-white px-4 py-8 shadow-2xl shadow-gray-900/10 sm:mx-16 sm:flex-none sm:rounded-3xl sm:px-12 sm:py-16">
           {children}
         </div>
       </main>

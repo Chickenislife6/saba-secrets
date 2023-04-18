@@ -20,23 +20,27 @@ import { Button } from '~/components/common/Button'
 import { TextField } from '~/components/common/Fields'
 import { ChatLayout } from '~/layouts/ChatLayout'
 import { cyrb53, decrypt, deriveKey, encrypt, hash } from '~/utils/crypto'
+import { toast } from '~/utils/toast'
 
 export default function Profile() {
   const { data } = useSession({
-    required: false,
+    required: true,
   })
 
-  const [saba, setSaba] = useState<string>('')
   const [derivedKey, setDerivedKey] = useState<string>('')
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false)
   const sabaInput = useRef<HTMLInputElement>(null)
 
   const handleSubmit = useCallback(
-    async (event: FormEvent<HTMLFormElement>, saba: string) => {
+    async (event: FormEvent<HTMLFormElement>) => {
       event.preventDefault()
+
       setIsSubmitting(true)
+
+      const saba = sabaInput.current?.value
+
       // If not in a secure context, probably should prevent user from logging in
-      if (!isSecureContext || !data?.user) {
+      if (!isSecureContext || !data?.user || saba === undefined) {
         return
       }
 
@@ -80,11 +84,17 @@ export default function Profile() {
 
       console.log(cyrb)
 
+      if (derivedKey === hashedSaba) {
+        toast.error({ primary: 'You entered the same hash!', secondary: 'Please try another one.' })
+      } else {
+        toast.success({ primary: 'Successfully hashed!', secondary: 'Please try another input.' })
+      }
+
       setDerivedKey(hashedSaba)
       sabaInput.current?.focus()
       setIsSubmitting(false)
     },
-    [data?.user]
+    [data?.user, derivedKey]
   )
 
   return (
@@ -92,17 +102,13 @@ export default function Profile() {
       <h1 className="text-center text-2xl font-extrabold">Profile</h1>
       {data && (
         <>
-          <p className="text-center text-lg">
-            <span>Id: {data.user.id}</span>
-            <br />
-            <span>Username: {data.user.username}</span>
-            <br />
-            <span>Identity PK: {data.user.identityPublicKey}</span>
-            <br />
-            <span>Saba Hash: {derivedKey}</span>
-            <br />
-            <span>Hash Length: {derivedKey.length}</span>
-          </p>
+          <div className="break-all text-center text-lg">
+            <p>Id: {data.user.id}</p>
+            <p>Username: {data.user.username}</p>
+            <p>Identity PK: {data.user.identityPublicKey}</p>
+            <p>Saba Hash: {derivedKey}</p>
+            <p>Hash Length: {derivedKey.length}</p>
+          </div>
           <button
             className="rounded-full bg-black/10 px-10 py-3 font-semibold text-black no-underline transition hover:bg-black/20"
             onClick={() =>
@@ -113,27 +119,24 @@ export default function Profile() {
           >
             Sign out
           </button>
-          <form onSubmit={event => handleSubmit(event, saba)}>
-            <TextField
-              id="saba"
-              label="Saba Code"
-              type="text"
-              ref={sabaInput}
-              autoFocus
-              required
-              value={saba}
-              onChange={e => setSaba(e.target.value)}
-            />
+          <form onSubmit={handleSubmit}>
+            <TextField id="saba" label="Saba Code" type="text" ref={sabaInput} autoFocus required />
             <Button
               type="submit"
               variant="outline"
               color="purple"
-              className="mt-4 w-full disabled:opacity-50 disabled:cursor-not-allowed"
+              className="mt-4 w-full disabled:cursor-not-allowed disabled:opacity-50"
               disabled={isSubmitting}
             >
               Submit
             </Button>
           </form>
+          <button
+            className="rounded-full bg-black/10 px-10 py-3 font-semibold text-black no-underline transition hover:bg-black/20"
+            onClick={() => toast.success({ primary: 'hello' })}
+          >
+            Click me
+          </button>
         </>
       )}
     </div>

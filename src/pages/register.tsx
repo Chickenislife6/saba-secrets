@@ -10,6 +10,7 @@ import { Link } from '~/components/common/Link'
 import { AuthLayout } from '~/layouts/AuthLayout'
 import { api } from '~/utils/api'
 import { serializePublicUserKeys } from '~/utils/serialize'
+import { toast } from '~/utils/toast'
 import { createNewUserKeys, extractPublicUserKeys } from '~/utils/user/user-keys'
 import { registerWithPWMatchSchema, type RegisterFields } from '~/validation/auth'
 
@@ -25,6 +26,7 @@ export default function Register() {
     resolver: zodResolver(registerWithPWMatchSchema),
   })
 
+  // Prefer error alert over toast for persist, standard UX
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
 
   // This to asynchronously check if the username is taken on demand (i.e., the submit event)
@@ -35,9 +37,9 @@ export default function Register() {
     async credentials => {
       const { username } = credentials
       try {
-        const userExists = await checkUsername.fetch({ username })
+        const userExists = await checkUsername.fetch({ username }, { staleTime: Infinity })
         if (!userExists) {
-          throw new Error('That username is taken. Please try another.')
+          throw new Error('User exists')
         }
 
         // Create Signal keys
@@ -52,6 +54,7 @@ export default function Register() {
           reset()
           setErrorMessage(null)
           // success toast for account created
+          toast.success({ primary: 'Account created successfully!' })
           void router.push('/login')
         }
       } catch (error) {
@@ -61,11 +64,8 @@ export default function Register() {
         // TODO: descriptive error messages for other Zod and TRPC errors
         // TODO: test mutation to see if error is thrown via mutateAsync or just returned via
         //       error from useMutation (which will be typed and formatted)
-        if (
-          error instanceof Error &&
-          error.message === 'That username is taken. Please try another.'
-        ) {
-          setErrorMessage(error.message)
+        if (error instanceof Error && error.message === 'User exists') {
+          setErrorMessage('That username is taken. Please try another.')
         } else {
           setErrorMessage('Sign up failed. Please try again.')
         }

@@ -6,5 +6,5 @@ type ChatLayoutProps = {
 
 // TODO: include navbar in ChatLayout (not rerendering on page change)
 export function ChatLayout({ children }: ChatLayoutProps) {
-  return <div className="flex h-screen w-screen flex-col bg-white">{children}</div>
+  return <div className="flex h-screen w-screen justify-center bg-white">{children}</div>
 }
