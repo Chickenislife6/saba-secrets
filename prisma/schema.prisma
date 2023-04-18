@@ -45,7 +45,7 @@ model SignedPreKey {
     id        Int
     publicKey String
     signature String
-    userId    String @unique // unique enforces 1-1 constraint
+    userId    String @unique @db.Uuid // unique enforces 1-1 constraint
 
     user User @relation(fields: [userId], references: [id])
 
@@ -56,7 +56,7 @@ model SignedPreKey {
 model OneTimePreKey {
     id        Int
     publicKey String
-    userId    String
+    userId    String @db.Uuid
 
     user User @relation(fields: [userId], references: [id])
 
@@ -65,12 +65,25 @@ model OneTimePreKey {
     @@map("one_time_pre_keys")
 }
 
-// enc_message_body = signal_encrypt({groupId, messageContent, timestamp, sender}, symmetricSignalKey)
-// content = encrypt(enc_message_body, recipientPK)
+// Message Encryption
+// msg = { convo_id, timestamp, content, content_type }
+// msg_ciphertext = signal_encrypt(msg, symmetricSignalKey) -> encrypted on Signal Protocol ratchet
+//    Note libsignal will return an object of the ciphertext body and its whisper type,
+//    for this, since everything will need to be sent/encrypted/stored as strings, consider 
+//    ciphertext to only be the ciphertext.body, rather than including the whipser type
+
+// Method 1: Encrypt on both users
+// envelope = encrypt(whisper_type || msg_ciphertext, sender_identity_SK)
+// body_cipher = encrypt(sender_id || envelope, recipient_identity_PK)
+
+// Method 2: Encrypt on only recipient
+// content = encrypt(sender_id || whisper_type || msg_ciphertext, recipient_identity_PK)
+
+// Any form of AES encryption will perform more than fast enough for the purposes of encryption/decryption
 model Message {
-    id           String @id @default(cuid())
-    recipientId  String
-    message_body String // include convo_id   // dont want to include timestamp
+    id          String @id @default(cuid())
+    recipientId String @db.Uuid
+    body        String
 
     recipient User @relation(name: "recipient", fields: [recipientId], references: [id])
 
