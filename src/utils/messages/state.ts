@@ -4,6 +4,7 @@ export type ChatMessage = {
     sender: string;
 };
 import { BehaviorSubject } from "rxjs";
+import { restoreMessages, storeMessages } from "../localstorage/messages";
 
 export const session: { [recipient: string]: ChatMessage[] } = {};
 export const sessionSubject = new BehaviorSubject<ChatMessage[]>([]);
@@ -19,8 +20,8 @@ export const addMessage = (recipient: string, message: ChatMessage) => {
         li.sort((a, b) => { return a.timestamp - b.timestamp });
     }
 
-    window.localStorage.setItem("session", JSON.stringify(session));
-    window.localStorage.setItem("timestamp", JSON.stringify(message.timestamp));
+    storeMessages(session, message.timestamp);
+
     // guaranteed to be non-null because single-threaded
     sessionSubject.next(session[recipient]!);
     return session[recipient];
@@ -42,10 +43,9 @@ export const getMessages = (recipient: string) => {
     return session[recipient];
 }
 
-export const restoreMessages = (recipient: string) => {
-    const ls = JSON.parse(window.localStorage.getItem("session") ?? "{}");
+export const reloadMessages = (recipient: string) => {
+    const { session: ls, timestamp: ts } = restoreMessages();
     Object.assign(session, ls);
-
-    timestamp = JSON.parse(window.localStorage.getItem("timestamp") ?? "0");
+    timestamp = ts;
     sessionSubject.next(session[recipient] ?? []);
 }
