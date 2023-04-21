@@ -6,8 +6,11 @@ export function storeMessages(session: { [recipient: string]: ChatMessage[] }, t
 }
 
 export function restoreMessages() {
-  const session = JSON.parse(window.localStorage.getItem('session') ?? '{}')
+  const localSession = localStorage.getItem('session')
+  const session = localSession ? JSON.parse(localSession) : {}
 
-  const timestamp = JSON.parse(window.localStorage.getItem('timestamp') ?? '0')
+  const localTimestamp = localStorage.getItem('timestamp')
+  const timestamp = localTimestamp ? JSON.parse(localTimestamp) : 0
+
   return { session, timestamp }
 }

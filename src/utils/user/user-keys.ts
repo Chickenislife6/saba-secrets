@@ -6,6 +6,7 @@ import {
   storeKeyPairs,
   storeSerializedKeyPair,
 } from '../localstorage/keys'
+import { stringToBase64, utf8ToString } from '../serialize'
 import type { PublicUserKeys, UserKeys } from './types'
 
 /**
@@ -54,10 +55,11 @@ export async function createNewUserKeys() {
 }
 
 export async function testIdentityKey() {
-  let key: KeyPairType<JsonWebKey> = getSerializedKeyPair('secretSenderKey')!
+  let key: KeyPairType<JsonWebKey> = getSerializedKeyPair(
+    'secretSenderKey'
+  ) as KeyPairType<JsonWebKey>
 
-  const enc = new TextEncoder()
-  const msg = enc.encode('test')
+  const msg = stringToBase64('test')
 
   const pub = await window.crypto.subtle.importKey(
     'jwk',
@@ -77,7 +79,7 @@ export async function testIdentityKey() {
   const encrypted = await window.crypto.subtle.encrypt({ name: 'RSA-OAEP' }, pub, msg)
   const decrypted = await window.crypto.subtle.decrypt({ name: 'RSA-OAEP' }, priv, encrypted)
 
-  console.log('successfully decrypted to: ' + new TextDecoder().decode(decrypted))
+  console.log('successfully decrypted to: ' + utf8ToString(decrypted))
 }
 
 export async function createNewOneTimePreKeys(num: number) {

@@ -1,6 +1,6 @@
 import { KeyPairType } from '@privacyresearch/libsignal-protocol-typescript'
 import * as base64 from 'base64-js'
-import { deserializeKeyPair, serializeKeyPair, stringToBuffer } from '../serialize'
+import { deserializeKeyPair, serializeKeyPair, stringToBase64 } from '../serialize'
 
 type StorageOptionsSerialize = 'identityKey' | 'oneTimePreKeys' | 'signedPreKey'
 
@@ -15,13 +15,15 @@ type StorageOptionsSerialized = 'secretSenderKey'
 // should only be called with objects that can be default serialized
 export const storeSerializedKeyPair = (
   name: StorageOptionsSerialized,
-  KeyPair: KeyPairType<object>
+  KeyPair: KeyPairType<JsonWebKey | string>
 ) => {
   window.localStorage.setItem(name + 'priv', JSON.stringify(KeyPair.privKey))
   window.localStorage.setItem(name + 'pub', JSON.stringify(KeyPair.pubKey))
 }
 
-export const getSerializedKeyPair = (name: StorageOptionsSerialized): KeyPairType<object> => {
+export const getSerializedKeyPair = (
+  name: StorageOptionsSerialized
+): KeyPairType<JsonWebKey | string> => {
   const privKey = JSON.parse(window.localStorage.getItem(name + 'priv')!)
   const pubKey = JSON.parse(window.localStorage.getItem(name + 'pub')!)
   return { privKey, pubKey }
@@ -34,8 +36,8 @@ export const getKeyPair = (name: StorageOptionsSerialize): KeyPairType | undefin
     return
   }
 
-  const pubKey = stringToBuffer(pub)
-  const privKey = stringToBuffer(priv)
+  const pubKey = stringToBase64(pub)
+  const privKey = stringToBase64(priv)
 
   return { privKey, pubKey }
 }

@@ -4,6 +4,7 @@ import {
 } from '@privacyresearch/libsignal-protocol-typescript'
 import { v4 as uuid } from 'uuid'
 import { SignalProtocolStore } from '../identity/signalStore'
+import { stringToUtf8, utf8ToString } from '../serialize'
 import { ChatMessage, ProcessedChatMessage } from './types'
 
 // must call loadSessionIfUndefined(to), and storeSession(to) before and after call
@@ -18,9 +19,7 @@ export async function encryptMessage(to: string, message: string, store: SignalP
     timestamp: Date.now(),
     body: message,
   }
-
-  const encoder = new TextEncoder()
-  const messageBuffer = encoder.encode(JSON.stringify(cm)).buffer
+  const messageBuffer = stringToUtf8(JSON.stringify(cm)).buffer
   const signalMessage = await cipher.encrypt(messageBuffer)
 
   return signalMessage
@@ -49,7 +48,7 @@ export async function getMessagesAndDecrypt(
     const messageJson = JSON.parse(message!.message)
     const plaintextBytes = await decryptMessageFn(messageJson, 'binary')
 
-    const plaintext = new TextDecoder().decode(new Uint8Array(plaintextBytes))
+    const plaintext = utf8ToString(new Uint8Array(plaintextBytes))
     let cm = JSON.parse(plaintext) as ProcessedChatMessage
     decodedmessages.push(cm)
   }

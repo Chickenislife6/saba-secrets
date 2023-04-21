@@ -1,5 +1,5 @@
 // Temporary file, used to test helper functions using the Crypto API and others
-import { bufferToString, stringToBuffer } from '~/utils/serialize'
+import { base64ToString, stringToBase64, stringToUtf8, utf8ToString } from '~/utils/serialize'
 
 /*
   Note: converting to base64 string results in smaller strings (256 // 6) + 1 = 44
@@ -16,7 +16,7 @@ export async function hash(str: string): Promise<string> {
   // Generate length 32 random bytes of 8 bits each
   const sha256Buffer = await digestSHA256(str)
   // Convert bytes to base64 string (6 bits per char)
-  return bufferToString(sha256Buffer)
+  return base64ToString(sha256Buffer)
 }
 
 function digestSHA256(str: string): Promise<ArrayBuffer> {
@@ -24,7 +24,7 @@ function digestSHA256(str: string): Promise<ArrayBuffer> {
     throw new Error('This function is only available in a secure context')
   }
 
-  const data = new TextEncoder().encode(str)
+  const data = stringToUtf8(str)
   return crypto.subtle.digest('SHA-256', data)
 }
 
@@ -99,7 +99,7 @@ export async function deriveKey(
 async function getKeyMaterial(baseKey: string): Promise<CryptoKey> {
   const format: Exclude<KeyFormat, 'jwk'> = 'raw'
 
-  const keyBuffer: BufferSource = new TextEncoder().encode(baseKey)
+  const keyBuffer: BufferSource = stringToUtf8(baseKey)
 
   const algorithm:
     | AlgorithmIdentifier
@@ -155,7 +155,7 @@ export async function encrypt(
     throw new Error('This function is only available in a secure context')
   }
 
-  const data = new TextEncoder().encode(str)
+  const data = stringToUtf8(str)
 
   const iv = crypto.getRandomValues(new Uint8Array(12))
 
@@ -170,7 +170,7 @@ export async function encrypt(
   }
 
   const ciphertext = await crypto.subtle.encrypt(algorithm, key, data)
-  return { ciphertext: bufferToString(ciphertext), iv } // iv is needed for decryption
+  return { ciphertext: base64ToString(ciphertext), iv } // iv is needed for decryption
 }
 
 export async function decrypt(ciphertext: string, key: CryptoKey, iv: Uint8Array): Promise<string> {
@@ -178,7 +178,7 @@ export async function decrypt(ciphertext: string, key: CryptoKey, iv: Uint8Array
     throw new Error('This function is only available in a secure context')
   }
 
-  const data = stringToBuffer(ciphertext)
+  const data = stringToBase64(ciphertext)
 
   const algorithm:
     | AlgorithmIdentifier
@@ -191,5 +191,5 @@ export async function decrypt(ciphertext: string, key: CryptoKey, iv: Uint8Array
   }
 
   const plaintext = await crypto.subtle.decrypt(algorithm, key, data)
-  return new TextDecoder().decode(plaintext)
+  return utf8ToString(plaintext)
 }
