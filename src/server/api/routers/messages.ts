@@ -1,8 +1,7 @@
 import { createTRPCRouter, protectedProcedure } from '~/server/api/trpc'
-import { timestampSchema } from '~/validation/messages'
 
 export const messagesRouter = createTRPCRouter({
-  loadNewMessages: protectedProcedure.input(timestampSchema).query(async ({ input, ctx }) => {
+  loadNewMessages: protectedProcedure.query(async ({ ctx }) => {
     const recipientId = ctx.session.user.id
 
     const result = await ctx.prisma.message.findMany({
@@ -10,6 +9,9 @@ export const messagesRouter = createTRPCRouter({
         recipientId,
       },
     })
+
+    // delete all new messages upon reciept
+
     return result
   }),
 })
