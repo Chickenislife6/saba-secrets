@@ -14,13 +14,13 @@ export function serializePublicUserKeys({
   identityPublicKey,
   signedPreKey,
   oneTimePreKey,
-  secretSenderKey
+  secretSenderKey,
 }: PublicUserKeys<ArrayBuffer>): PublicUserKeys<string> {
   return {
     identityPublicKey: bufferToString(identityPublicKey),
     signedPreKey: serializeSignedPreKey(signedPreKey),
     oneTimePreKey: serializePreKey(oneTimePreKey),
-    secretSenderKey: JSON.stringify(secretSenderKey)
+    secretSenderKey: JSON.stringify(secretSenderKey),
   }
 }
 
@@ -28,13 +28,13 @@ export function deserializePublicUserKeys({
   identityPublicKey,
   signedPreKey,
   oneTimePreKey,
-  secretSenderKey
+  secretSenderKey,
 }: PublicUserKeys<string>): PublicUserKeys<ArrayBuffer> {
   return {
     identityPublicKey: stringToBuffer(identityPublicKey),
     signedPreKey: deserializeSignedPreKey(signedPreKey),
     oneTimePreKey: deserializePreKey(oneTimePreKey),
-    secretSenderKey: JSON.parse(secretSenderKey) as JsonWebKey
+    secretSenderKey: JSON.parse(secretSenderKey) as JsonWebKey,
   }
 }
 

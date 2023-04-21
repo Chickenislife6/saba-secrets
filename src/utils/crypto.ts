@@ -1,5 +1,4 @@
 // Temporary file, used to test helper functions using the Crypto API and others
-import { KeyPairType } from '@privacyresearch/libsignal-protocol-typescript'
 import { bufferToString, stringToBuffer } from '~/utils/serialize'
 
 /*
@@ -29,23 +28,6 @@ function digestSHA256(str: string): Promise<ArrayBuffer> {
   return crypto.subtle.digest('SHA-256', data)
 }
 
-
-
-export function generateKeyPair(): KeyPairType<string> {
-  const { generateKeyPairSync } = require('crypto');
-  const { privateKey, publicKey } = generateKeyPairSync('rsa', {
-    modulusLength: 2048,
-    publicKeyEncoding: {
-      type: 'spki',
-      format: 'pem'
-    },
-    privateKeyEncoding: {
-      type: 'pkcs8',
-      format: 'pem'
-    }
-  });
-  return { pubKey: publicKey, privKey: privateKey }
-}
 /*
   Alternative for string hashing to number
   See explanation here: https://stackoverflow.com/questions/7616461/generate-a-hash-from-string-in-javascript
