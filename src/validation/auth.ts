@@ -46,7 +46,8 @@ export const registerWithKeysSchema = registerSchema.extend({
   identityPublicKey: identityPublicKeySchema,
   signedPreKey: signedPreKeySchema,
   oneTimePreKey: preKeySchema,
+  // this is supposed to be a JsonWebKey
+  secretSenderKey: z.string()
 })
-
 export type LoginFields = z.infer<typeof loginSchema>
 export type RegisterFields = z.infer<typeof registerSchema>

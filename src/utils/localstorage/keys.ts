@@ -4,16 +4,31 @@ import {
 import * as base64 from 'base64-js';
 import { deserializeKeyPair, serializeKeyPair } from "../serialize";
 
-type StorageOptions = "identityKey" | "oneTimePreKeys" | "signedPreKey"
+type StorageOptionsSerialize = "identityKey" | "oneTimePreKeys" | "signedPreKey"
 
-export const storeKeyPair = (name: StorageOptions, KeyPair: KeyPairType) => {
+export const storeKeyPair = (name: StorageOptionsSerialize, KeyPair: KeyPairType) => {
     const privstr = base64.fromByteArray(new Uint8Array(KeyPair.privKey));
     window.localStorage.setItem(name + 'priv', privstr);
     const pubstr = base64.fromByteArray(new Uint8Array(KeyPair.pubKey));
     window.localStorage.setItem(name + 'pub', pubstr);
 }
 
-export const getKeyPair = (name: StorageOptions): KeyPairType | undefined => {
+type StorageOptionsSerialized = "secretSenderKey"
+// should only be called with objects that can be default serialized
+export const storeSerializedKeyPair = (name: StorageOptionsSerialized, KeyPair: KeyPairType<object>) => {
+    window.localStorage.setItem(name + 'priv', JSON.stringify(KeyPair.privKey));
+    window.localStorage.setItem(name + 'pub', JSON.stringify(KeyPair.pubKey));
+
+}
+
+export const getSerializedKeyPair = (name: StorageOptionsSerialized): KeyPairType<object> => {
+    const priv = JSON.parse(window.localStorage.getItem(name + 'priv')!);
+    const pub = JSON.parse(window.localStorage.getItem(name + 'pub')!);
+    return { privKey: priv, pubKey: pub }
+
+}
+
+export const getKeyPair = (name: StorageOptionsSerialize): KeyPairType | undefined => {
     const pub = window.localStorage.getItem(name + 'pub');
     const priv = window.localStorage.getItem(name + 'priv');
     if (pub == null || priv == null) {
@@ -26,7 +41,7 @@ export const getKeyPair = (name: StorageOptions): KeyPairType | undefined => {
     return { privKey: privArrayBuffer, pubKey: pubArrayBuffer }
 }
 
-export const storeKeyPairs = (name: StorageOptions, id: number, KeyPair: KeyPairType) => {
+export const storeKeyPairs = (name: StorageOptionsSerialize, id: number, KeyPair: KeyPairType) => {
     let values: { [id: number]: KeyPairType<string> } = {};
 
     const localstorage = window.localStorage.getItem(name);
@@ -39,7 +54,7 @@ export const storeKeyPairs = (name: StorageOptions, id: number, KeyPair: KeyPair
     window.localStorage.setItem(name, JSON.stringify(values));
 }
 
-export const getKeyPairs = (name: StorageOptions) => {
+export const getKeyPairs = (name: StorageOptionsSerialize) => {
     const localstorage = window.localStorage.getItem(name);
     if (localstorage === null) {
         return

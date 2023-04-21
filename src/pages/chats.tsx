@@ -14,12 +14,16 @@ import { type ReactElement } from 'react'
 import { Link } from '~/components/common/Link'
 import { useMessages } from '~/hooks/use-messages'
 import { ChatLayout } from '~/layouts/ChatLayout'
+import { loadIdentity } from '~/utils/identity/state'
 
 export default function Chats() {
   const { data } = useSession({
     required: true,
   })
 
+  if (typeof window !== 'undefined') {
+    loadIdentity()
+  }
   const messages = useMessages()
 
   return (

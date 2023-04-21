@@ -16,7 +16,7 @@ export const userRouter = createTRPCRouter({
   }),
 
   register: publicProcedure.input(registerWithKeysSchema).mutation(async ({ input, ctx }) => {
-    const { username, password, identityPublicKey, signedPreKey, oneTimePreKey } = input
+    const { username, password, identityPublicKey, signedPreKey, oneTimePreKey, secretSenderKey } = input
 
     // This redundancy exists to safeguard against client-side attacks
     const userExists = await ctx.prisma.user.findFirst({
@@ -46,6 +46,7 @@ export const userRouter = createTRPCRouter({
         oneTimePreKeys: {
           create: oneTimePreKey,
         },
+        secretSenderKey
       },
     })
 
