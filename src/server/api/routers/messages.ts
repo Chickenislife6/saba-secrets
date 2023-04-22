@@ -10,8 +10,13 @@ export const messagesRouter = createTRPCRouter({
       },
     })
 
+    const ids = result.map(({ id }) => id)
     // delete all new messages upon reciept
-
+    ctx.prisma.message.deleteMany({
+      where: {
+        id: { in: ids },
+      },
+    })
     return result
   }),
 })

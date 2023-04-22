@@ -1,6 +1,5 @@
 import { KeyHelper, KeyPairType, PreKeyType } from '@privacyresearch/libsignal-protocol-typescript'
 import {
-  getKeyPair,
   getSerializedKeyPair,
   storeKeyPair,
   storeKeyPairs,
@@ -83,26 +82,21 @@ export async function testIdentityKey() {
 }
 
 export async function createNewOneTimePreKeys(num: number) {
-  const identityKeyPair = getKeyPair('identityKey')!
+  // const identityKeyPair = getKeyPair('identityKey')!
+  const baseKeys = crypto.getRandomValues(new Uint16Array(num))
 
-  const keys: PreKeyType[] = []
-  for (let i = 0; i < num; i++) {
-    const baseKeyId = crypto.getRandomValues(new Uint16Array(2))
-    const preKey = await KeyHelper.generatePreKey(baseKeyId[0]!)
-    storeKeyPairs('oneTimePreKeys', baseKeyId[1]!, preKey.keyPair)
+  const oneTimePreKeys = await Promise.all([...baseKeys].map(KeyHelper.generatePreKey))
 
-    // might need this? not sure yet
-    // const signedPreKeyId = Math.floor(100000 * Math.random());
-    // const signedPreKey = await KeyHelper.generateSignedPreKey(identityKeyPair, signedPreKeyId)
-    // storeKeyPairs("signedPreKeyId", signedPreKeyId, signedPreKey.keyPair)
-
-    const publicPreKey: PreKeyType = {
-      keyId: preKey.keyId,
-      publicKey: preKey.keyPair.pubKey,
-    }
-    keys.push(publicPreKey)
+  for (const key of oneTimePreKeys) {
+    storeKeyPairs('oneTimePreKeys', key.keyId, key.keyPair)
   }
-  return keys
+  return oneTimePreKeys.map(
+    ({ keyId, keyPair }) =>
+      ({
+        keyId,
+        publicKey: keyPair.pubKey,
+      } satisfies PreKeyType<ArrayBuffer>)
+  )
 }
 
 /**
