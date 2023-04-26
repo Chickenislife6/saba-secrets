@@ -17,7 +17,7 @@ export function serializePublicUserKeys({
   secretSenderKey,
 }: PublicUserKeys<ArrayBuffer>): PublicUserKeys<string> {
   return {
-    identityPublicKey: base64ToString(identityPublicKey),
+    identityPublicKey: bufferToString(identityPublicKey),
     signedPreKey: serializeSignedPreKey(signedPreKey),
     oneTimePreKey: serializePreKey(oneTimePreKey),
     secretSenderKey: JSON.stringify(secretSenderKey),
@@ -31,7 +31,7 @@ export function deserializePublicUserKeys({
   secretSenderKey,
 }: PublicUserKeys<string>): PublicUserKeys<ArrayBuffer> {
   return {
-    identityPublicKey: stringToBase64(identityPublicKey),
+    identityPublicKey: stringToBuffer(identityPublicKey),
     signedPreKey: deserializeSignedPreKey(signedPreKey),
     oneTimePreKey: deserializePreKey(oneTimePreKey),
     secretSenderKey: JSON.parse(secretSenderKey) as JsonWebKey,
@@ -53,7 +53,7 @@ export function serializeSignedPreKey(
 ): SignedPublicPreKeyType<string> {
   return {
     ...serializePreKey(key),
-    signature: base64ToString(key.signature),
+    signature: bufferToString(key.signature),
   }
 }
 
@@ -62,50 +62,50 @@ export function deserializeSignedPreKey(
 ): SignedPublicPreKeyType<ArrayBuffer> {
   return {
     ...deserializePreKey(key),
-    signature: stringToBase64(key.signature),
+    signature: stringToBuffer(key.signature),
   }
 }
 
 export function serializePreKey(key: PreKeyType<ArrayBuffer>): PreKeyType<string> {
   return {
     keyId: key.keyId,
-    publicKey: base64ToString(key.publicKey),
+    publicKey: bufferToString(key.publicKey),
   }
 }
 
 export function deserializePreKey(key: PreKeyType<string>): PreKeyType<ArrayBuffer> {
   return {
     keyId: key.keyId,
-    publicKey: stringToBase64(key.publicKey),
+    publicKey: stringToBuffer(key.publicKey),
   }
 }
 
 // Key Pairs
 export function serializeKeyPair(key: KeyPairType<ArrayBuffer>): KeyPairType<string> {
   return {
-    pubKey: base64ToString(key.pubKey),
-    privKey: base64ToString(key.privKey),
+    pubKey: bufferToString(key.pubKey),
+    privKey: bufferToString(key.privKey),
   }
 }
 
 export function deserializeKeyPair(key: KeyPairType<string>): KeyPairType<ArrayBuffer> {
   return {
-    pubKey: stringToBase64(key.pubKey),
-    privKey: stringToBase64(key.privKey),
+    pubKey: stringToBuffer(key.pubKey),
+    privKey: stringToBuffer(key.privKey),
   }
 }
 
 // Buffer/String conversions
-export function base64ToString(buffer: ArrayBuffer): string {
+export function bufferToString(buffer: ArrayBuffer): string {
   return base64.fromByteArray(new Uint8Array(buffer))
 }
 
-export function stringToBase64(str: string): ArrayBuffer {
+export function stringToBuffer(str: string): ArrayBuffer {
   return base64.toByteArray(str).buffer
 }
 
 export function utf8ToString(buf: Uint8Array | ArrayBuffer) {
-  const dec = new TextDecoder()
+  const dec = new TextDecoder('utf-8')
   const msg = dec.decode(buf)
   return msg
 }

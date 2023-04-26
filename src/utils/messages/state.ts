@@ -3,6 +3,7 @@ import { restoreMessages, storeMessages } from '../localstorage/messages'
 import { ChatMessage } from './types'
 
 export const session: { [recipient: string]: ChatMessage[] } = {}
+export let current_subject = ''
 export const sessionSubject = new BehaviorSubject<ChatMessage[]>([])
 export let timestamp: number = 0
 
@@ -22,7 +23,7 @@ export const addMessage = (recipient: string, message: ChatMessage) => {
   storeMessages(session, message.timestamp)
 
   // guaranteed to be non-null because single-threaded
-  sessionSubject.next(session[recipient]!)
+  sessionSubject.next(session[current_subject]!)
   return session[recipient]
 }
 
@@ -39,9 +40,13 @@ export const getMessages = (recipient: string) => {
   return session[recipient]
 }
 
-export const reloadMessages = (recipient: string) => {
+export const loadMessages = (recipient: string) => {
+  current_subject = recipient
+  sessionSubject.next(session[recipient] ?? [])
+}
+
+export const reloadMessages = () => {
   const { session: ls, timestamp: ts } = restoreMessages()
   Object.assign(session, ls)
   timestamp = ts
-  sessionSubject.next(session[recipient] ?? [])
 }

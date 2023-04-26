@@ -5,7 +5,7 @@ import {
   storeKeyPairs,
   storeSerializedKeyPair,
 } from '../localstorage/keys'
-import { stringToBase64, utf8ToString } from '../serialize'
+import { bufferToString, stringToBuffer, stringToUtf8, utf8ToString } from '../serialize'
 import type { PublicUserKeys, UserKeys } from './types'
 
 /**
@@ -53,12 +53,32 @@ export async function createNewUserKeys() {
   } satisfies UserKeys
 }
 
+export async function importKey(key: string, type: 'decrypt' | 'encrypt'): Promise<CryptoKey> {
+  const jwk = JSON.parse(key)
+  const pub = await window.crypto.subtle.importKey(
+    'jwk',
+    jwk,
+    { name: 'RSA-OAEP', hash: 'SHA-256' },
+    true,
+    [type]
+  )
+  return pub
+}
+
 export async function testIdentityKey() {
   let key: KeyPairType<JsonWebKey> = getSerializedKeyPair(
     'secretSenderKey'
   ) as KeyPairType<JsonWebKey>
 
-  const msg = stringToBase64('test')
+  const m =
+    '{test}}}aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
+  const mes = window.localStorage.getItem('TEST')!
+  const needed_pad = 4 - (m.length % 4)
+  const msg = m.padEnd(needed_pad + m.length)
+  const message = stringToUtf8(m).buffer
+  const test = bufferToString(message)
+  console.log(test)
+  const test2 = stringToBuffer(test)
 
   const pub = await window.crypto.subtle.importKey(
     'jwk',
@@ -74,10 +94,12 @@ export async function testIdentityKey() {
     true,
     ['decrypt']
   )
-
-  const encrypted = await window.crypto.subtle.encrypt({ name: 'RSA-OAEP' }, pub, msg)
-  const decrypted = await window.crypto.subtle.decrypt({ name: 'RSA-OAEP' }, priv, encrypted)
-
+  console.log(message)
+  const encrypted = await window.crypto.subtle.encrypt({ name: 'RSA-OAEP' }, pub, message)
+  const web_compatable = bufferToString(encrypted)
+  const after_web = stringToBuffer(web_compatable)
+  const decrypted = await window.crypto.subtle.decrypt({ name: 'RSA-OAEP' }, priv, after_web)
+  console.log(decrypted)
   console.log('successfully decrypted to: ' + utf8ToString(decrypted))
 }
 

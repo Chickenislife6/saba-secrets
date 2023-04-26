@@ -46,23 +46,23 @@ model SignedPreKey {
     keyId     Int
     publicKey String
     signature String
-    userId    String @unique @db.Uuid // unique enforces 1-1 constraint
+    username  String @unique // unique enforces 1-1 constraint
 
-    user User @relation(fields: [userId], references: [id])
+    user User @relation(fields: [username], references: [username])
 
-    @@index([userId])
+    @@index([username])
     @@map("signed_pre_keys")
 }
 
 model OneTimePreKey {
     keyId     Int
     publicKey String
-    userId    String @db.Uuid
+    username  String @unique
 
-    user User @relation(fields: [userId], references: [id])
+    user User @relation(fields: [username], references: [username])
 
-    @@unique([keyId, userId])
-    @@index([userId])
+    @@unique([keyId])
+    @@index([username])
     @@map("one_time_pre_keys")
 }
 
@@ -82,13 +82,13 @@ model OneTimePreKey {
 
 // Any form of AES encryption will perform more than fast enough for the purposes of encryption/decryption
 model Message {
-    id          String @id @default(cuid())
-    recipientId String @db.Uuid
-    body        String
+    id            String @id @default(cuid())
+    recipientUser String @db.VarChar(200)
+    body          String
 
-    recipient User @relation(name: "recipient", fields: [recipientId], references: [id])
+    recipient User @relation(name: "recipient", fields: [recipientUser], references: [username])
 
-    @@index([recipientId])
+    @@index([recipientUser])
     @@map("messages")
 }
 

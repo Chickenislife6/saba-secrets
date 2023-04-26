@@ -8,7 +8,7 @@ import {
   SignedPreKeyPairType,
   StorageType,
 } from '@privacyresearch/libsignal-protocol-typescript'
-import { base64ToString } from '../serialize'
+import { bufferToString } from '../serialize'
 
 // Type guards
 export function isKeyPairType(kp: any): kp is KeyPairType {
@@ -102,7 +102,7 @@ export class SignalProtocolStore implements StorageType {
     if (trusted === undefined) {
       return Promise.resolve(true)
     }
-    return Promise.resolve(base64ToString(identityKey) === base64ToString(trusted as ArrayBuffer))
+    return Promise.resolve(bufferToString(identityKey) === bufferToString(trusted as ArrayBuffer))
   }
   async loadPreKey(keyId: string | number): Promise<KeyPairType | undefined> {
     let res = this.get('25519KeypreKey' + keyId, undefined)
@@ -148,7 +148,7 @@ export class SignalProtocolStore implements StorageType {
       throw new Error('Identity Key is incorrect type')
     }
 
-    if (existing && base64ToString(identityKey) !== base64ToString(existing as ArrayBuffer)) {
+    if (existing && bufferToString(identityKey) !== bufferToString(existing as ArrayBuffer)) {
       return true
     } else {
       return false

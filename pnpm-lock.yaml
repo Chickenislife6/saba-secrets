@@ -74,8 +74,8 @@ dependencies:
     specifier: ^7.8.0
     version: 7.8.0
   superjson:
-    specifier: ^1.12.3
-    version: 1.12.3
+    specifier: 1.12.2
+    version: 1.12.2
   uuid:
     specifier: ^9.0.0
     version: 9.0.0
@@ -1180,7 +1180,7 @@ packages:
       '@tanstack/react-query': 4.29.3(react-dom@18.2.0)(react@18.2.0)
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
-      superjson: 1.12.3
+      superjson: 1.12.2
       use-sync-external-store: 1.2.0(react@18.2.0)
     dev: true
 
@@ -5001,8 +5001,8 @@ packages:
       pirates: 4.0.5
       ts-interface-checker: 0.1.13
 
-  /superjson@1.12.3:
-    resolution: {integrity: sha512-0j+U70KUtP8+roVPbwfqkyQI7lBt7ETnuA7KXbTDX3mCKiD/4fXs2ldKSMdt0MCfpTwiMxo20yFU3vu6ewETpQ==}
+  /superjson@1.12.2:
+    resolution: {integrity: sha512-ugvUo9/WmvWOjstornQhsN/sR9mnGtWGYeTxFuqLb4AiT4QdUavjGFRALCPKWWnAiUJ4HTpytj5e0t5HoMRkXg==}
     engines: {node: '>=10'}
     dependencies:
       copy-anything: 3.0.3

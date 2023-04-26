@@ -1,6 +1,6 @@
 import { KeyPairType } from '@privacyresearch/libsignal-protocol-typescript'
 import * as base64 from 'base64-js'
-import { deserializeKeyPair, serializeKeyPair, stringToBase64 } from '../serialize'
+import { deserializeKeyPair, serializeKeyPair, stringToBuffer } from '../serialize'
 
 type StorageOptionsSerialize = 'identityKey' | 'oneTimePreKeys' | 'signedPreKey'
 
@@ -36,8 +36,8 @@ export const getKeyPair = (name: StorageOptionsSerialize): KeyPairType | undefin
     return
   }
 
-  const pubKey = stringToBase64(pub)
-  const privKey = stringToBase64(priv)
+  const pubKey = stringToBuffer(pub)
+  const privKey = stringToBuffer(priv)
 
   return { privKey, pubKey }
 }

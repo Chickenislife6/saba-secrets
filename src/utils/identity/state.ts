@@ -1,4 +1,10 @@
+import {
+  DeviceType,
+  SessionBuilder,
+  SignalProtocolAddress,
+} from '@privacyresearch/libsignal-protocol-typescript'
 import { getKeyPair, getKeyPairs } from '../localstorage/keys'
+import { stringToBuffer } from '../serialize'
 import { SignalProtocolStore } from './signalStore'
 
 export const store = new SignalProtocolStore()
@@ -22,7 +28,7 @@ export function loadIdentity() {
 // gets recipient.1 from store, then stores in localstorage
 export async function storeSession(recipient: string) {
   const session = await store.loadSession(recipient + '.1')
-  if (typeof session === 'string') {
+  if (session !== undefined) {
     window.localStorage.setItem(recipient + 'session', session)
   } else {
     throw Error('failed to store session!')
@@ -31,16 +37,39 @@ export async function storeSession(recipient: string) {
 
 // mutably adds the session of recipient to store, if exists
 export const loadSession = (recipient: string) => {
-  console.log('intialized ' + recipient)
   const session = window.localStorage.getItem(recipient + 'session')
-  if (typeof session === 'string') {
+  if (session !== null) {
     store.storeSession(recipient + '.1', session)
+    return { success: true }
   }
+  return { success: false }
 }
 
 export async function loadSessionIfUndefined(recipient: string) {
-  if (store.loadSession(recipient + '.1') === undefined) {
-    loadSession(recipient)
+  if ((await store.loadSession(recipient + '.1')) === undefined) {
+    return loadSession(recipient)
   }
-  return store
+  return { success: false }
+}
+
+export async function addSession(data: DeviceType<string>, recipient: string) {
+  if ((await store.loadSession(recipient + '.1')) !== undefined) {
+    return
+  }
+  const recipientAddress = new SignalProtocolAddress(recipient, 1)
+  const sessionBuilder = new SessionBuilder(store, recipientAddress)
+
+  const bundle: DeviceType = {
+    identityKey: stringToBuffer(data.identityKey),
+    signedPreKey: {
+      ...data.signedPreKey,
+      signature: stringToBuffer(data.signedPreKey.signature),
+      publicKey: stringToBuffer(data.signedPreKey.publicKey),
+    },
+    preKey: {
+      ...data.preKey!,
+      publicKey: stringToBuffer(data.preKey!.publicKey),
+    },
+  }
+  await sessionBuilder.processPreKey(bundle)
 }

@@ -1,3 +1,4 @@
+import { DeviceType } from '@privacyresearch/libsignal-protocol-typescript'
 import { TRPCError } from '@trpc/server'
 import { hash } from 'argon2'
 
@@ -16,7 +17,8 @@ export const userRouter = createTRPCRouter({
   }),
 
   register: publicProcedure.input(registerWithKeysSchema).mutation(async ({ input, ctx }) => {
-    const { username, password, identityPublicKey, signedPreKey, oneTimePreKey, secretSenderKey } = input
+    const { username, password, identityPublicKey, signedPreKey, oneTimePreKey, secretSenderKey } =
+      input
 
     // This redundancy exists to safeguard against client-side attacks
     const userExists = await ctx.prisma.user.findFirst({
@@ -46,7 +48,7 @@ export const userRouter = createTRPCRouter({
         oneTimePreKeys: {
           create: oneTimePreKey,
         },
-        secretSenderKey
+        secretSenderKey,
       },
     })
 
@@ -55,5 +57,33 @@ export const userRouter = createTRPCRouter({
       message: 'Account created successfully',
       data: { id: result.id, username: result.username },
     }
+  }),
+
+  getUser: publicProcedure.input(usernameSchema).query(async ({ ctx, input }) => {
+    return ctx.prisma.user.findUnique({ where: { username: input.username } })
+  }),
+
+  getPreKeyBundle: publicProcedure.input(usernameSchema).query(async ({ ctx, input }) => {
+    const user = await ctx.prisma.user.findUnique({ where: { username: input.username } })
+    if (user === null) {
+      throw new TRPCError({ message: 'user does not exist!', code: 'INTERNAL_SERVER_ERROR' })
+    }
+
+    const signedPreKey = await ctx.prisma.signedPreKey.findUnique({
+      where: { username: user.username },
+    })
+    const preKey = await ctx.prisma.oneTimePreKey.findFirst({ where: { username: input.username } })
+    // commented out for easier dev experience
+    // const preKey = await ctx.prisma.oneTimePreKey.delete({ where: { username: input.username } })
+    if (preKey === null) {
+      throw new TRPCError({ message: 'user is out of prekeys!', code: 'INTERNAL_SERVER_ERROR' })
+    }
+
+    const bundle = {
+      identityKey: user.identityPublicKey,
+      signedPreKey: signedPreKey!,
+      preKey: preKey,
+    } satisfies DeviceType<string>
+    return bundle
   }),
 })
