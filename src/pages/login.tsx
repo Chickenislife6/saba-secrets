@@ -41,6 +41,7 @@ export default function Login() {
         return setErrorMessage('Log in failed. Please try again.')
       } else {
         setErrorMessage(null)
+        window.localStorage.setItem('currentUser', credentials.username)
         void router.push('/chats')
       }
     },

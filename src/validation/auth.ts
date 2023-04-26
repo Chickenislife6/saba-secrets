@@ -46,7 +46,34 @@ export const registerWithKeysSchema = registerSchema.extend({
   identityPublicKey: identityPublicKeySchema,
   signedPreKey: signedPreKeySchema,
   oneTimePreKey: preKeySchema,
+  // this is supposed to be a JsonWebKey
+  secretSenderKey: z.string(),
 })
-
 export type LoginFields = z.infer<typeof loginSchema>
 export type RegisterFields = z.infer<typeof registerSchema>
+
+export const messageSchema = z.object({
+  message: z.string(),
+})
+
+export const sendMessageSchema = z.object({
+  recipient: z.string(),
+  message: z.string(),
+})
+
+export type MessageField = z.infer<typeof messageSchema>
+
+export const addSessionSchema = usernameSchema.extend({
+  preKeyBundle: z.object({
+    identityKey: z.string(),
+    signedPreKey: z.object({
+      keyId: z.number(),
+      publicKey: z.string(),
+      signature: z.string(),
+    }),
+    preKey: z.object({
+      keyId: z.number(),
+      publicKey: z.string(),
+    }),
+  }),
+})

@@ -14,11 +14,13 @@ export function serializePublicUserKeys({
   identityPublicKey,
   signedPreKey,
   oneTimePreKey,
+  secretSenderKey,
 }: PublicUserKeys<ArrayBuffer>): PublicUserKeys<string> {
   return {
     identityPublicKey: bufferToString(identityPublicKey),
     signedPreKey: serializeSignedPreKey(signedPreKey),
     oneTimePreKey: serializePreKey(oneTimePreKey),
+    secretSenderKey: JSON.stringify(secretSenderKey),
   }
 }
 
@@ -26,11 +28,13 @@ export function deserializePublicUserKeys({
   identityPublicKey,
   signedPreKey,
   oneTimePreKey,
+  secretSenderKey,
 }: PublicUserKeys<string>): PublicUserKeys<ArrayBuffer> {
   return {
     identityPublicKey: stringToBuffer(identityPublicKey),
     signedPreKey: deserializeSignedPreKey(signedPreKey),
     oneTimePreKey: deserializePreKey(oneTimePreKey),
+    secretSenderKey: JSON.parse(secretSenderKey) as JsonWebKey,
   }
 }
 
@@ -98,4 +102,16 @@ export function bufferToString(buffer: ArrayBuffer): string {
 
 export function stringToBuffer(str: string): ArrayBuffer {
   return base64.toByteArray(str).buffer
+}
+
+export function utf8ToString(buf: Uint8Array | ArrayBuffer) {
+  const dec = new TextDecoder('utf-8')
+  const msg = dec.decode(buf)
+  return msg
+}
+
+export function stringToUtf8(str: string) {
+  const enc = new TextEncoder()
+  const msg = enc.encode(str)
+  return msg
 }

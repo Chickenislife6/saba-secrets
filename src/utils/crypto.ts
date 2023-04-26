@@ -1,5 +1,5 @@
 // Temporary file, used to test helper functions using the Crypto API and others
-import { bufferToString, stringToBuffer } from '~/utils/serialize'
+import { bufferToString, stringToBuffer, stringToUtf8, utf8ToString } from '~/utils/serialize'
 
 /*
   Note: converting to base64 string results in smaller strings (256 // 6) + 1 = 44
@@ -24,7 +24,7 @@ function digestSHA256(str: string): Promise<ArrayBuffer> {
     throw new Error('This function is only available in a secure context')
   }
 
-  const data = new TextEncoder().encode(str)
+  const data = stringToUtf8(str)
   return crypto.subtle.digest('SHA-256', data)
 }
 
@@ -99,7 +99,7 @@ export async function deriveKey(
 async function getKeyMaterial(baseKey: string): Promise<CryptoKey> {
   const format: Exclude<KeyFormat, 'jwk'> = 'raw'
 
-  const keyBuffer: BufferSource = new TextEncoder().encode(baseKey)
+  const keyBuffer: BufferSource = stringToUtf8(baseKey)
 
   const algorithm:
     | AlgorithmIdentifier
@@ -155,7 +155,7 @@ export async function encrypt(
     throw new Error('This function is only available in a secure context')
   }
 
-  const data = new TextEncoder().encode(str)
+  const data = stringToUtf8(str)
 
   const iv = crypto.getRandomValues(new Uint8Array(12))
 
@@ -191,5 +191,5 @@ export async function decrypt(ciphertext: string, key: CryptoKey, iv: Uint8Array
   }
 
   const plaintext = await crypto.subtle.decrypt(algorithm, key, data)
-  return new TextDecoder().decode(plaintext)
+  return utf8ToString(plaintext)
 }
