@@ -9,7 +9,7 @@
 */
 
 import { zodResolver } from '@hookform/resolvers/zod'
-import { signOut, useSession } from 'next-auth/react'
+import { useSession } from 'next-auth/react'
 import { useCallback, useEffect, useState, type ReactElement } from 'react'
 import { SubmitHandler, useForm } from 'react-hook-form'
 import { Button } from '~/components/common/Button'
@@ -18,13 +18,21 @@ import { TextField } from '~/components/common/Fields'
 
 import { Link } from '~/components/common/Link'
 import { Message } from '~/components/common/Message'
+import { User } from '~/components/common/User'
 import { useMessages } from '~/hooks/use-messages'
 import { useObservable } from '~/hooks/use-observable'
 import { ChatLayout } from '~/layouts/ChatLayout'
 import { api } from '~/utils/api'
 import { addSession, loadIdentity, loadSession, store, storeSession } from '~/utils/identity/state'
 import { encryptMessage } from '~/utils/messages/crypto'
-import { addMessage, current_subject, loadMessages, sessionSubject } from '~/utils/messages/state'
+import {
+  addMessage,
+  current_subject,
+  loadMessages,
+  reloadMessages,
+  session,
+  sessionSubject,
+} from '~/utils/messages/state'
 import {
   addPublicKey,
   encryptWithKey,
@@ -36,45 +44,66 @@ import { MessageField, messageSchema } from '~/validation/auth'
 export default function Chats() {
   const [chat, setChat] = useState('')
   const [show, setShow] = useState(false)
+  const reload = useObservable(sessionSubject, [])
   const { data } = useSession({
     required: true,
   })
 
+  useEffect(() => {
+    loadIdentity()
+    reloadMessages()
+  }, [])
   if (typeof window !== 'undefined') {
     loadIdentity()
   }
   const messages = useMessages()
 
+  if (data === undefined) {
+    return <div>loading..</div>
+  }
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center gap-4">
-      <h1 className="text-center text-2xl font-extrabold">Chats</h1>
-      {data && (
-        <>
-          <div className="text-center text-lg">
-            <p>Username: {data.user.username}</p>
+    <div className="flex grow flex-row justify-between ">
+      <div className="basis-1/4 items-start ">
+        <div className="p-6">
+          <h1 className="text-center text-2xl font-extrabold">Chats for {data!.user.username}</h1>
+          <div className="py-1 text-center text-lg">
             <Link href="/profile">Go to profile</Link>
           </div>
-          <button
-            className="rounded-full bg-black/10 px-10 py-3 font-semibold text-black no-underline transition hover:bg-black/20"
-            onClick={() =>
-              void signOut({
-                callbackUrl: '/',
-              })
-            }
-          >
-            Sign out
-          </button>
-        </>
-      )}
-      <input onChange={e => setChat(e.target.value)} placeholder="adfasdfds"></input>
-      <input
-        type="button"
-        onClick={() => {
-          setShow(!show)
-        }}
-        value="Show chat!"
-      ></input>
+          <div className="text-center"></div>
+          <div className="flex justify-stretch py-1 ">
+            <TextField
+              placeholder="username"
+              className="grow"
+              id="addUser"
+              type="addUser"
+              autoComplete="addUser"
+              onChange={e => {
+                setChat(e.target.value)
+                setShow(false)
+              }}
+            ></TextField>
+            <Button onClick={() => setShow(!show)}>Add User</Button>
+          </div>
+          {Object.keys(session).map(key => {
+            return (
+              <div className="py-1">
+                <User
+                  handler={() => {
+                    setShow(true)
+                    loadMessages(key)
+                    setChat(key)
+                  }}
+                  user={key}
+                  recent_message={session[key]!.at(-1)?.message!}
+                />
+              </div>
+            )
+          })}
+        </div>
+      </div>
+      {/* <div className="flex grow flex-col items-center justify-center gap-4"> */}
       {show ? <Chat recipient={chat} user={data?.user.username!} /> : <></>}
+      {/* </div> */}
     </div>
   )
 }
@@ -171,8 +200,19 @@ function Chat(props: props) {
     return <div>{fetchError.message}</div>
   }
   return (
-    <div>
-      {errorMessage && <ErrorAlert message={errorMessage} />}
+    <div className="flex grow flex-col justify-center p-10">
+      <h1 className="py-3 text-center text-2xl font-extrabold">Chat with: {props.recipient}</h1>
+      <div className="h-3/6 overflow-y-scroll">
+        {errorMessage && <ErrorAlert message={errorMessage} />}
+        {messages.map(msg => (
+          <Message
+            message={msg.message}
+            sender={msg.sender}
+            timestamp={msg.timestamp}
+            recipient={props.user}
+          />
+        ))}
+      </div>
       <form onSubmit={handleSubmit(onSubmit)}>
         <div className="space-y-6">
           <TextField
@@ -185,14 +225,7 @@ function Chat(props: props) {
             inputRegister={register('message')}
           />
         </div>
-        {messages.map(msg => (
-          <Message
-            message={msg.message}
-            sender={msg.sender}
-            timestamp={msg.timestamp}
-            recipient={props.user}
-          />
-        ))}
+
         <Button type="submit" color="purple" className="mt-8 w-full" disabled={isSubmitting}>
           Send Message
         </Button>

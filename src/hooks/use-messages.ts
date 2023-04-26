@@ -1,9 +1,9 @@
 import { KeyPairType, MessageType } from '@privacyresearch/libsignal-protocol-typescript'
 import { api } from '~/utils/api'
-import { loadIdentity, loadSession, storeSession } from '~/utils/identity/state'
+import { loadSession, storeSession } from '~/utils/identity/state'
 import { getSerializedKeyPair } from '~/utils/localstorage/keys'
 import { decryptMessage } from '~/utils/messages/crypto'
-import { addMessage, reloadMessages } from '~/utils/messages/state'
+import { addMessage } from '~/utils/messages/state'
 import { stringToBuffer, utf8ToString } from '~/utils/serialize'
 import { importKey } from '~/utils/user/user-keys'
 
@@ -40,8 +40,6 @@ export function useMessages() {
           return (await JSON.parse(final_str)) satisfies SecretSender
         })
       )
-      loadIdentity()
-      reloadMessages()
       for (const message of messages) {
         if (message.type === 1) {
           loadSession(message.sender)
