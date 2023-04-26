@@ -15,7 +15,6 @@ import { SubmitHandler, useForm } from 'react-hook-form'
 import { Button } from '~/components/common/Button'
 import { ErrorAlert } from '~/components/common/ErrorAlert'
 import { TextField } from '~/components/common/Fields'
-
 import { Link } from '~/components/common/Link'
 import { Message } from '~/components/common/Message'
 import { User } from '~/components/common/User'
@@ -39,7 +38,7 @@ import {
   loadPublicKeys,
   publicKeys,
 } from '~/utils/secretSender/state'
-import { supabase } from '~/utils/supabase/state'
+import { sendMessageSUPA, subscribeSUPA } from '~/utils/supabase/state'
 import { MessageField, messageSchema } from '~/validation/auth'
 
 export default function Chats() {
@@ -55,22 +54,16 @@ export default function Chats() {
   useEffect(() => {
     loadIdentity()
     reloadMessages()
-    try {
-      supabase
-        .channel('any')
-        .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages' }, () => {
-          messages.refetch()
-        })
-        .subscribe()
-    } catch (e) {
-      console.log(e)
-    }
   }, [])
   if (typeof window !== 'undefined') {
     loadIdentity()
+    subscribeSUPA(() => {
+      messages.refetch()
+      console.log('REFETCHINGGGG')
+    })
   }
 
-  if (data === undefined) {
+  if (data === undefined || data === null) {
     return <div>loading..</div>
   }
   return (
@@ -144,7 +137,7 @@ function Chat(props: props) {
     loadPublicKeys()
     setFetchPreKey(!loadSession(props.recipient).success)
     if (publicKeys[props.recipient] === undefined) setFetchPK(true)
-  }, [])
+  }, [props.recipient])
 
   const { data: preKeyBundle, error: fetchError } = api.user.getPreKeyBundle.useQuery(
     { username: props.recipient },
@@ -199,6 +192,7 @@ function Chat(props: props) {
         sender: props.user,
         timestamp: Date.now(),
       })
+      setTimeout(sendMessageSUPA, 1000)
       // } catch (_e) {
       // setErrorMessage('test')
       // setErrorMessage((_e as Error).message + 'error')

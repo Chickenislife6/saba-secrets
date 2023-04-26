@@ -23,7 +23,7 @@ export const addMessage = (recipient: string, message: ChatMessage) => {
   storeMessages(session, message.timestamp)
 
   // guaranteed to be non-null because single-threaded
-  sessionSubject.next(session[current_subject]!)
+  sessionSubject.next(session[current_subject] ?? [])
   return session[recipient]
 }
 
