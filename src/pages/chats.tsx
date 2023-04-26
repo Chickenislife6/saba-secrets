@@ -91,7 +91,7 @@ export default function Chats() {
           </div>
           {Object.keys(session).map(key => {
             return (
-              <div className="py-1">
+              <div key={key} className="py-1">
                 <User
                   handler={() => {
                     setShow(true)
@@ -210,12 +210,14 @@ function Chat(props: props) {
       <h1 className="py-3 text-center text-2xl font-extrabold">Chat with: {props.recipient}</h1>
       <div className="h-3/6 overflow-y-scroll">
         {errorMessage && <ErrorAlert message={errorMessage} />}
-        {messages.map(msg => (
+        {messages.map((msg, i) => (
           <Message
+            key={i}
             message={msg.message}
             sender={msg.sender}
             timestamp={msg.timestamp}
             recipient={props.user}
+            isCurrent={i === messages.length - 1}
           />
         ))}
       </div>
