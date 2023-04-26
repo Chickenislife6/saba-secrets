@@ -13,9 +13,7 @@ export function User(props: props) {
       <h5 className="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
         User: {props.user}
       </h5>
-      <p className="font-normal text-gray-700 dark:text-gray-400">
-        Most Recent Message: {props.recent_message}
-      </p>
+      <p className="font-normal text-gray-700 dark:text-gray-400">{props.recent_message}</p>
     </a>
   )
 }

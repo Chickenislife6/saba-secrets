@@ -39,6 +39,7 @@ import {
   loadPublicKeys,
   publicKeys,
 } from '~/utils/secretSender/state'
+import { supabase } from '~/utils/supabase/state'
 import { MessageField, messageSchema } from '~/validation/auth'
 
 export default function Chats() {
@@ -49,14 +50,25 @@ export default function Chats() {
     required: true,
   })
 
+  const messages = useMessages()
+
   useEffect(() => {
     loadIdentity()
     reloadMessages()
+    try {
+      supabase
+        .channel('any')
+        .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages' }, () => {
+          messages.refetch()
+        })
+        .subscribe()
+    } catch (e) {
+      console.log(e)
+    }
   }, [])
   if (typeof window !== 'undefined') {
     loadIdentity()
   }
-  const messages = useMessages()
 
   if (data === undefined) {
     return <div>loading..</div>
